@@ -1,0 +1,317 @@
+#separator:tab
+#html:false
+如何从Git仓库克隆项目到本地的命令？	答：使用命令git clone [仓库URL]
+在web storm这个IDE中，可视化的方法执行commit操作，背后是执行了哪些git的指令？	先 git add  然后 git commit。
+在命令行中执行 git add。数据流向是啥	工作区更改添加到暂存区。
+执行了 git commit。数据流向是啥	暂存区的更改提交到本地仓库。
+WebStorm里面，当你点击“commit”按钮时，IDE 实际上执行了哪2个指令	更改添加到暂存区。 git add。 暂存的更改提交到本地仓库。 git commit。
+执行 哪个git命令时，更改会被添加到暂存区，	git add
+Show Diff 在git中这个指令所显示的内容是什么	显示的是仓库中上次提交记录与当前工作区的区别。
+当自己对代码进行了修改，想要对比一下，相对于之前提交的版本，有哪些新的改变，要使用哪条git指令？ 	Show Diff
+IDE里面的快捷键，调出git操作	alt + ~（左上角的符号）
+"IDE（如 WebStorm）中的 ""Force Push"" 选项是什么含义，对于什么指令"	强制推送  git push -f
+git pull 包含了哪些指令	fetch 和 merge
+在执行 git pull 之前， 建议先做什么	commit 来提交到本地仓库
+使用 Git 的拉取（pull）操作的目的	保持您的本地仓库与远程仓库同步，并减少合并冲突 获取到最新的代码状态。
+每天开始工作前，或在开始新的任务前，先干什么git操作	从远程仓库拉取最新的更改。git pull
+两个从远程仓库到本地仓库的git指令是什么。	pull fetch
+为了让本地仓库与远程仓库第一次建立关联，选择 “Manage Remotes…”之后，要进行什么步骤呢?	点击 “+” 添加一个新的远程仓库。输入您在 Gitee/Github 上仓库的 URL
+哪个目录是Git用来跟踪和管理该项目版本控制信息的核心存储区。	`.git`目录
+git pull命令的作用是什么?	远程仓库的内容合并到本地仓库  从远程仓库获取最新的内容并尝试将其合并到本地仓库中。
+git pull执行时，如果无冲突的更改发生会怎样?	Git能够自动合并这些更改，本地代码不会被覆盖。
+当git pull遇到有冲突的更改时会怎样?	Git会停止合并过程，并让用户手动解决这些冲突。
+如何提交未提交的更改以便于接下来准备执行git pull? 使用哪两个指令？	先使用git add添加更改到暂存区，然后使用git commit提交这些更改。
+使用git stash命令的目的是什么?	临时保存工作区和暂存区的未提交的代码   临时保存工作区的未提交的修改 使工作区回到干净的状态。
+git pull的主要目的是什么?	获取远程仓库的代码。然后合并到本地仓库。
+为什么说定期执行git pull可以提高协作效率?	大家都处于同样版本的代码，都是一样的最新的代码，这样可以更好的协调工作。
+git pull实际上是哪两个命令的组合?	git fetch和git merge。
+如果远程仓库中的更改与本地更改不冲突，git pull会如何处理?	自动合并这些更改
+在git pull过程中如何处理存在冲突的更改?	不会自动覆盖，而是让用户手动解决。
+git pull如何确保用户的本地更改不会被无意中覆盖?	不会自动覆盖本地更改，如果出现冲突会要求用户手动解决。
+执行git pull之前保持工作目录和暂存区干净的建议是基于什么考虑?	是为了避免工作区未提交的修改在合并的过程中丢失。
+执行git pull之前，我们需要执行哪两条git语句？	git add git commit
+新分支创建和切换的Git命令是什么?	git switch -c < branch-name>
+使用git merge命令合并分支时可能遇到的一个挑战是什么?	可能会遇到代码冲突，需要手动解决。
+git reset命令的三种模式分别是什么?	--soft、--mixed和--hard
+"在WebStorm IDE中，""Rollback""选项的用途是什么?"	撤销最近的一次或多次Git提交。撤销的是本地仓库的提交。
+Rollback在WebStorm中的作用类似于哪个Git命令?	git reset --soft
+Git提交的唯一标识是什么?	提交哈希值。
+使用git reset --hard HEAD~1命令的作用是什么?哪个仓库回到哪个状态？	本地仓库回到上次提交之前的状态。
+强制推送到远程仓库的Git命令是什么?	git push --force
+在团队合作项目中使用git push --force的副作用是什么?	覆盖其他人的更改和重写提交历史，引起同步问题。
+使用git revert而不是git push --force的优势是什么?对于历史方面	避免重写公共历史，保留历史记录。
+团队合作中如何安全地处理错误的提交?使用的是什么git的指令？	git revert
+git pull命令是哪两个命令的组合?	git fetch和git merge。
+在执行git pull之前提交所有更改的目的是避免什么丢失	避免工作区未提交的代码丢失
+执行git pull的工作流程实际上包括哪两个步骤?	获取远程仓库的更改，fetch 然后合并更改到当前分支，merge
+使用git stash在git pull前的作用是什么?	临时保存未完成的更改，减少合并冲突的风险。
+现在呢我写完一个功能模块，想把它推到远程仓库，这个时候要执行哪三个git指令	首先执行commit提交到本地仓库， 然后使用pull拉取远程仓库。 最后push推送到远程仓库。
+什么情况下git pull命令需要手动解决冲突?	当某个文件的同一个部分， 在本地修改了，同时远程仓库也进行了修改
+在github页面里面如何找到可以直接安装的软件包？	"GitHub仓库的""Releases""部分。"
+IDE里面，第一次如何将当前项目直接上传到GitHub或JetBrains Space?【使用到了哪个选项？】	使用“Share Project on GitHub”或“Share Project on Space”选项。
+webstorm里面，如果项目还没有启用Git版本控制应该选择什么?	“Enable Version Control Integration”然后选择“Git”。 或者  add to VCS
+Git Bash是什么?	命令行界面，运行Git命令
+Git Bash提供图形用户界面(GUI)吗?	不，它侧重于命令行操作。
+如何从Git版本控制中永久移除一个项目？	删除.git目录。
+git init命令的作用是什么？	在现有目录中初始化一个新的Git仓库。
+在GitHub上fork仓库后，原仓库的更改如何影响你的版本？	不会直接影响你fork的版本。
+使用GitHub Pages适合托管哪种类型的项目？	纯静态的项目 前后端分离项目中的前端部分。
+如果项目需要从前端代码中访问数据库，GitHub Pages是否适用？	如果想直接从前端来访问数据库的话，那么不行 如果是通过API接口来访问数据库的话，那么可以。
+git init 的作用以及会创建一个什么目录	初始化一个新的Git仓库 它会创建一个新的.git目录
+.git目录包含了哪些信息？	项目的Git仓库信息，包括提交历史、分支、标签等。
+执行git init命令会发生什么？	创建.git目录，初始化Git本地仓库。
+.git目录的作用是什么？	管理不同的版本，以及各个分支。 记录所有的提交历史。
+.git目录通常是可见的还是隐藏的？	隐藏的。
+发现一个项目目录中有.git目录意味着什么？	项目已被初始化为Git仓库 项目已经被添加到版本控制。
+如果一个项目没有.git目录会怎样？	说明这个项目没有被版本控制
+GitHub Pages是用来做什么的？【托管哪两种网站？】	纯静态网站或者是前后端分离的前端项目。
+GitHub Pages支持自定义域名吗？	支持。
+GitHub Pages适用于哪种类型的网站？【2个】	静态网站， 前后端分离项目的前端部分。
+前端项目可以通过什么服务来免费托管？	GitHub Pages。
+如果项目是前后端分离的，前端部署应选择什么服务？	GitHub Pages。
+GitHub Pages适用于托管什么类型的项目？	静态网站，如个人博客或项目展示。
+当项目部署在Vercel上时，GitHub仓库发生更改后会发生什么？	更改后的代码会自动重新部署到服务器
+如何初始化一个新的Git仓库？【git指令】	运行git init。
+如何将本地仓库与GitHub仓库链接？【git命令】	运行git remote add origin [你的仓库的URL]。
+如何把代码推送到GitHub？【git指令】	运行git push -u origin master或git push -u origin main。
+如何将本地项目推送到GitHub？【添加，提交，推送这三个git指令。】	"使用git add .添加文件， git commit -m ""消息""提交更改， 最后git push -u origin master推送到GitHub。"
+使用git 指令添加文件	使用git add .
+提交更改到仓库的git指令。	"git commit -m ""消息""提交更改，"
+将本地仓库推到远程仓库的git指令。	git push -u origin master推送到GitHub。
+首次将本地仓库与 GitHub 仓库链接，git命令	git remote add origin <https://github.com/your_username/your_repository.git>
+.env 文件是一个简单的文本文件，其中包含了什么变量，存放什么信息。这个文件应该被添加到 哪个文件中，避免公开	环境变量 敏感信息【密码，密钥】 .gitignore
+在Git中,git diff命令通常用于什么?【显示的是什么跟什么的差异？用来展示什么时期以来的变化？】	显示当前工作区与上次提交之间的差异, 展示自上次提交以来对文件所做的未提交改动。
+git add命令的作用是什么?	将更改的文件添加到暂存区(staging area)。
+git commit命令的作用是什么?	将暂存区的更改提交到本地仓库。
+git push命令的作用是什么?	将本地仓库的提交发送到远程仓库。
+为什么在执行git pull之前要先提交(commit)本地更改?	确保本地工作已经记录在了本地仓库，这样拉取的时候才能自动合并。
+如果远程仓库有新的更改,直接推送本地的更改到远程仓库会发生什么？【git会提示什么？】	Git会要求先拉取(pull)远程更改,解决任何冲突,然后再次尝试推送push
+Git是否允许本地更改直接覆盖远程仓库的内容?	可以覆盖远程仓库，但不建议 ,Git会试图保护远程仓库的历史不被意外覆盖, 除非使用特殊操作如强制推送。
+执行git pull的目的是什么?	远程内容合并到本地  确保本地仓库与远程仓库保持同步,减少合并冲突的可能性。
+如果远程仓库和本地仓库的更改没有冲突,执行git pull会发生什么?	Git会自动合并这些更改, 本地更改会保留,远程更改也会被合并进来。
+如果远程仓库和本地仓库的更改存在冲突,执行git pull会发生什么?	"Git会标记出冲突,要求手动解决这些冲突,不会自动决定哪些更改是""正确的""。"
+代码都提交到仓库的情况下，执行git pull会导致本地工作丢失吗?	不会,Git会尝试自动合并更改,或者在存在冲突时提示解决冲突。
+在工作区中完成更改后,需要执行什么操作?【要执行什么git的操作？】	需要提交(commit)这些更改到本地仓库。
+如何将本地仓库的更改上传到远程仓库?	通过推送(push)操作,使用git push命令。
+如何从远程仓库获取最新的更改?【一个指令与两个指令分别是什么？】	git pull git fetch, git merge
+在Git中,正确的操作顺序是什么?【两个仓库他们的先后顺序。】	先commit到本地仓库,然后push到远程仓库。
+"在Git中,""amend""的作用是什么?【修改什么，将什么合并到什么里面？】"	修改最后一次提交, 将当前更改合并到上一次提交中, 而不是创建新提交。
+git里面的强制推送会造成什么？	会造成本地仓库来覆盖远程仓库。
+git里面，暂存区，它的英文是什么？	staging area
+Staging Area 中文名称	暂存区
+当你执行 git add 命令时，更改会被添加到哪里	暂存区
+Stash Changes 作用是什么	允许你临时保存你的工作进度，而不会干扰到当前的工作流程
+Stash Changes 作用是否是将更改存储到暂存区	不是，而是存储到 Git 的一个独立的 stash 区域。
+git 里面，暂存区 和  stash 区域 是一个东西吗？	不是
+Git 暂存区 对应的英文	staging area
+Stash Changes... 数据流向:是什么	将工作目录的更改保存到 Git 的 Stash。
+Stash Changes... 使用场景 是什么	当你正在进行的工作尚未完成且你需要切换到其他任务时，可以暂时存储更改。
+git status:这是最基本的命令，作用是什么	工作区和暂存区的修改 也就是，哪些文件被修改，哪些修改被暂存
+git status: 绿色文字 和 红色文字 分别表示 什么	暂存的更改通常会以绿色文字显示，而未暂存的更改会以红色文字显示。
+WebStorm（的 Git 集成中，提交（commit）对话框通常提供了一种便利，相当于合并了哪两个步骤	将更改添加到暂存区（staging area）将暂存区的内容提交到仓库这两个步骤合并为一步执行。
+WebStorm里面，当你点击“commit”按钮时，IDE  首先执行 什么操作？这相当于执行什么命令。 然后，IDE 执行什么操作。这相当于执行了 什么指令	首先将这些选中的更改添加到暂存区。这相当于在命令行中执行 git add。然后，IDE 将这些已经暂存的更改提交到本地仓库。这相当于执行了 git commit。
+.gitignore 文件一般在哪里？	项目的根目录
+在 .gitignore 文件中，添加什么内容来忽略 .idea 文件夹	.idea/
+git 提交命令是什么	"git commit -m ""xxx"""
+哪个命令将更改推送到远程仓库	git push origin <your-branch-name>
+Pycharm里面显示底部分支信息的快捷键	alt + 9
+Pycharm里面显示git 操作快捷键	alt + ~【左上角】
+.idea：这是什么文件夹	这是 IntelliJ IDEA 项目的配置文件夹
+git config 命令的作用范围 有两种分别是什么？	局部配置（单个仓库级别） 全局配置（用户级别/所有仓库）
+git config 命令 配置局部用户名和邮箱	"git config user.name ""你的姓名或昵称"" git config user.email ""你的邮箱地址"""
+git config 命令 配置全局用户名和邮箱	"git config --global user.name ""你的姓名或昵称"" git config --global user.email ""你的邮箱地址"""
+git config 命令 使用--global 参数 和 没有使用这个参数 分别的作用是什么	没有 使用 --global 参数的情况下运行 git config，Git 会将配置应用于当前仓库。使用 --global 参数时，Git 会将配置应用于当前用户的所有仓库。
+"git config user.name ""你的姓名或昵称"" git config user.email ""你的邮箱地址""  需要局部配置用户名和邮箱，对于上面的指令，需要在哪里怎么操作？"	进入该仓库的根目录。在 Windows 上，你可以右键点击仓库文件夹，选择“Git Bash Here”，在该目录下打开 Git Bash。
+需要局部配置用户名和邮箱，局部配置是针对什么？	某个特定的 Git 仓库
+全局配置用户名和邮箱，全局配置是针对什么？	当前用户的所有仓库
+在不使用 --global 的情况下，git config 会将配置应用于哪里	当前仓库
+没有配置本地的 Git 用户名和邮箱，然后配置了 Gitee 上的 SSH 公钥，是否直接可以克隆代码到本地？以及为什么？	可以，无需本地用户名和邮箱。 克隆代码只需要进行用户的身份认证就行。SSH 就已经进行了身份认证。
+id_rsa id_rsa.pub 这两个文件里面分别存放什么？	私钥 公钥
+通过指令生成的私钥和公钥，分别怎么处理	私钥不用管，自动读取 公钥复制到gitee或者github里面，用于SSH认证
+在git里面，配置用户名和邮箱的作用是什么？	提交记录、代码审查、责任追踪里面会显示 作者信息【用户名和邮箱】
+克隆操作里面通过SSH链接来进行，是否 需git命令本地用户名和邮箱配置？需要什么配置	不需要本地用户名和邮箱配置 需要生成公钥和私钥，并将私钥配置到gitee
+Git 的用户名和邮箱配置，是否会影响你对远程仓库的访问权限。影响的是什么？	不会影响权限 仅影响你本地提交时的作者信息
+生成 SSH 密钥对，密钥对指的是什么？	公钥（public key） 和 私钥（private key）
+生成 SSH 密钥对时， 公钥（public key） 和 私钥（private key）分别放到哪里？	私钥： 保存在你的本地计算机上，必须妥善保管，不能泄露给他人。公钥： 可以公开，将其上传到 GitHub 等远程服务器，用于验证你的身份。
+当你在本地执行 git push 或 git pull 等操作时，Git 会自动使用公钥还是私钥进行身份验证	私钥
+SSH 密钥并配置 GitHub 以及 配置本地 Git 用户名和邮箱 这两个步骤的先后顺序是什么以及各自的作用是什么？	先配置本地 Git 用户名和邮箱： 这将确保你的提交记录中包含正确的作者信息。然后生成 SSH 密钥并配置 GitHub： 这样你就可以使用 SSH 协议与 GitHub 进行安全通信，用户认证，无需每次输入密码。
+右键菜单中的选项，Git Bash Here ，作用是什么？	当前选定的文件夹路径下打开一个 Git Bash 命令行窗口。 省去了在命令行中逐层进入目标目录的步骤，直接在需要的目录下开始工作。
+HTTPS  和  SSH 方式 这两种方式连接远程仓库，他们的效果上，区别是什么？	HTTPS 方式： 如果你使用 HTTPS 协议连接远程仓库，推送代码时可能需要输入用户名和密码。 SSH 方式： 如果你使用 SSH 密钥进行认证，则无需每次输入密码。
+默认情况下， git diff 比较的是什么和什么之间的差异。	工作目录中尚未暂存的修改，与暂存区中的内容
+git stash 默认 会同时保存 哪里的修改	工作目录中的修改 暂存区中的修改。
+git stash 的设计目的是让开发者能够快速清理工作环境，方便切换分支或同步代码，同时保证什么	所有未提交的修改都被安全保存。
+使用git来将代码推送到远程仓库github上时候，使用到了SSH，这里的SSH的英文全称以及中文名称是什么？	Secure Shell Protocol（安全外壳协议）
+Git 必须安装在c盘吗？	安装在哪个分区都行，只要正确配置了系统环境变量（PATH），Git 的命令行工具都可以正常工作
+如何判断你的电脑是否已经安装了 Git？	cmd 输入 git --version指令
+Gitee 完整利用SSH认证的过程	1. 你连接 Gitee 服务器 2. Gitee 发送一个随机字符串 3. 你的电脑用本地私钥对这个字符串进行签名 4. Gitee 用存储的公钥验证签名 5. 验证成功则允许访问
+Gitee 使用SSH认证的过程中，是否需要手动使用私钥？	不需要，因为系统在后台已经自动使用了存储在你电脑上的私钥完成了认证。
+Gitee 使用HTTPS方式克隆项目之后，每次需要输入用户名和密码，这里的用户名和密码指的是本地git的账号密码？	不是，本地git 只有账号和邮箱 这里指的是 Gitee（第三方平台）的用户名和密码
+HTTPS和SSH，这两种方式，他们分别的用途是不是不一样？ HTTPS只能克隆下来，无法push，而SSH，既可以clone 又可以push？	不对，HTTPS 和 SSH 都可以进行 clone 和 push 操作，它们的主要区别在于认证方式。HTTPS 每次和平台gitee的交互都需要使用账号和密码，而SSH 则不需要
+对于SSH 项目clone克隆方式，必须事先怎么样	在 Gitee 配置 SSH 公钥
+PR (Pull Request) 是一个分支吗？	不是，而是一个请求机制
+PR 是一个什么样的申请	请求合并代码的申请
+PR 是建立在分支的基础上	
+PR 与分支的关系【流程图】	分支 A (源分支，如 功能分支)     ↓ 创建 PR     ↓ 请求合并到 分支 B (目标分支，如 主分支)
+将一个分支的更改合并到另一个分支（通常是主分支）的正式请求，叫做什么？	PR（Pull Request）
+为什么团队开发里面，PR是必要的	确保代码经过审查，来确保代码质量团队成员可以相互学习
+Merge 'origin/group05-Scott' into 'group05'  这个合并操作是本地还是远程进行的？	本地
+Merge 'origin/group05-Scott' into 'group05'  将哪里的内容合并到哪里的目标分支	远程分支 本地
+分支合并后，为什么必须 Push	合并操作是本地的
+目前已经到了目标分支group05，而右下角的显示界面，有两个group05-Scott工作分支，一个是local，另一个是remote，这个时候，选择哪个？以及为什么？	选择远程分支，因为远程分支代表了团队可见的正式版本
+Merge 'origin/group05-Scott' into 'group05' 这个选项的作用是什么？	分支合并 将Scott这个工作分支合并到group05这个主分支
+Merge 'origin/group05-Scott' into 'group05' 这个选项的出现，意味着，当前处于哪个分支？	group05分支
+工作分支 和 目标分支 之间的合并方向是什么？	从工作分支合并到目标分支
+如果需要合并功能分支，那么需要处于哪个分支？	目标分支【主分支】
+PyCharm 中的使用图形界面合并分支 group05 以及 group05-Scott ， 怎么操作？	"切换到目标分支（group05）点击要合并的分支（group05-Scott）选择 ""Merge 'group05-Scott' into 'group05'"""
+Pull Request 是针对谁？针对fork还是branch分支？	Pull Request可以用于fork间，也可以在同一仓库的分支间。
+Feature Branch Workflow 这种开发模式是什么？	每个人维护一个分支，一个分支对应一个功能，开发完以后就合并到主分支里面。 每个开发人员为自己正在处理的功能创建一个新的分支 开发人员在自己的分支上进行代码编写提交到本地分支，并推送到远程仓库 将更改合并到主分支。
+id_rsa 是 SSH 密钥对中的私钥文件的默认名称 这个名字看起来很奇怪，如何理解	id：代表“身份”（identity）。在 SSH 的上下文中，密钥对用于标识用户的身份。rsa：表示使用的是 RSA 加密算法。RSA 是一种常用的公钥加密算法，广泛用于 SSH 密钥对的生成。
+ssh-keygen -t rsa  这个命令是干什么的？	生成一对 RSA 公钥和私钥，用于安全的 SSH 连接
+阿里云平台的这个 Git 仓库地址本质上是什么？	与 GitHub、GitLab 本质相同，都是支持相同指令（如 git clone、git pull、git push）的 Git 仓库系统，只是托管平台不同。
+GitHub 私有仓库的两种访问方式分别需要什么？	HTTPS 需输入账号密码；SSH 使用密钥认证。
+Python 中，文件夹名，文件名，类名，以及常量名，各名称的命名规范是什么？	文件夹名、文件名、变量名：全小写加下划线分隔； 类名：首字母大写的驼峰命名； 常量名：全大写加下划线分隔。
+从 Python 项目规范角度，为什么不推荐使用中划线（-）命名项目？	因为在 import 时会被识别为减号运算符，导致报错。
+仓库名或根目录可以使用中划线吗？	可以，例如：project-code/。
+“project-code” 这种文件夹命名适合和不适合哪些情况？为什么？	适合用于仓库名（Git 层面）； 不适合用于 Python 包名（import 层面），因为会导致 import 报错。
+我有一些 Markdown 文档、TXT 文件和混乱的代码，这个文件夹应该叫什么？	文档、分析、思考、计划等内容可放在 notes/；  未整理的实验代码或片段可放在 drafts/。
+使用 HTTPS 克隆命令失败且忘记账号密码怎么办？	可切换为 SSH 克隆方式，但需先在网站上配置好本机的 SSH 公钥，系统会自动通过密钥配对完成认证。
+查看本地和远程所有分支的指令是什么？	git branch -a
+在新建并进入分支后，第一次推送时为什么要加上 -u 参数？	-u（或 --set-upstream）用于将本地分支与远程分支关联，建立跟踪关系，之后可直接使用 git push、git pull 等命令而无需再指定远程分支。
+开发时应该为每个功能单独建分支，还是把所有修改放在个人分支里？	主流做法是每个功能一个分支，这种方式称为 feature branch 模型，是最常见且最安全的团队协作方式。
+为什么不建议把所有修改都放在个人分支里？	因为无法部分合并，若他人只需功能 A 而功能 B 未完成，就不能单独合并。
+功能开发和 Bug 修复分支的命名风格是什么？	功能开发：feature/<yourname>_<feature>，如 feature/puyuyang_login_api； Bug 修复：bugfix/<yourname>_<issue>，如 bugfix/puyuyang_fix_encoding。
+git checkout -b feature/puyuyang_mock-interview 中的 -b 是什么意思？	-b 是 --branch 的缩写，表示在当前分支上创建新分支并立即切换到该分支。
+git checkout -b xxx = ___ + ___ 一步完成。	创建 + 切换
+为什么创建完分支后还要执行 git push？	因为创建的只是本地分支，远程仓库（如 Codeup）并不知道该分支的存在。
+git push -u origin feature/puyuyang_mock-interview 做了哪两件事？	① 将本地分支上传到远程仓库，生成同名分支 origin/feature/puyuyang_mock-interview； ② 建立追踪关系，以后执行 git push 或 git pull 时可直接使用默认远程分支，无需再写 origin 和分支名。
+🔹 git push -u = “_____ + _____ ”	“让远程知道你的分支 + 建立绑定关系”
+git status 的作用是什么？	用于查看当前工作区状态，包括文件修改、暂存情况，以及本地分支是否与远程分支同步。
+按照 requirements.txt 文件安装所有依赖的指令是什么？	pip install -r requirements.txt
+创建名为 career_env、使用 Python 3.12 的虚拟环境指令是什么？	conda create -n career_env python=3.12 其中：-n career_env 指定环境名称，python=3.12 指定 Python 版本。
+pip install -r requirements.txt 中的 -r 是什么意思？	-r 是 --requirement 的缩写，表示从指定的 requirements 文件中读取并一次性安装所有依赖包。
+如果项目没有 requirements.txt，如何生成？	使用指令：pip freeze > requirements.txt
+pip install -r requirements.txt 这个指令里面，  -r 参数 = ________	“告诉 pip 去读取一个文件里的依赖列表并批量安装”。
+左下角的弹窗这是什么中文意思呀？	你可能把 Python 包安装到了全局环境（global environment）中，  这样可能导致不同项目之间的包版本冲突。  是否要创建一个虚拟环境（virtual environment），  把这些依赖包隔离起来？
+已在 Conda 虚拟环境中（如前缀显示 (career_env)），还需要点击 Create 创建虚拟环境吗？	不需要，这只是 VS Code 未正确检测到 Conda 环境，可在右下角手动切换解释器。
+VS Code 右下角的“解释器选择”是否等同于终端激活的虚拟环境？	不是。两者互不影响： “解释器选择” 决定“▶ Run Python File” 按钮和智能提示使用的 Python； 终端激活的虚拟环境决定命令行中 python、pip 等命令的执行环境
+为什么 VS Code 要区分终端和编辑器使用的 Python 解释器？	因为 VS Code 的理念是“终端独立于编辑器”： 终端由用户控制，可手动激活不同环境； 编辑器的解释器由 VS Code 管理，用于运行、补全、调试等功能； 两者可同步，但默认不自动同步，以避免多环境冲突。
+终端激活的环境与 VS Code 编辑器绑定的 Python 是否默认一致？	默认不自动同步。
+⚙️ Select Interpreter 代表什么？	代表 VS Code 编辑器内部绑定的 Python 路径。
+开始新一天工作时，Git 工作流的顺序是什么？	推荐先处理本地修改，再拉取远程更新。
+开始新一天工作时，为什么用 pull --rebase 比普通 pull 更好？	因为它能减少冲突并保持提交历史更干净。
+在从远程仓库拉取代码前，需要先确保什么？	确保工作目录是干净的。
+在从远程仓库拉取代码前，为确保工作目录干净，需要执行哪些 Git 指令？	"git add .   git commit -m ""feat: complete feature A"""
+使用 git stash 有什么作用？	它会暂存当前修改（含暂存区和工作区），让工作目录恢复到上次提交（HEAD）的状态。
+本地修改未完成又不想提交时，应该用什么指令？作用是什么？	使用 git stash，它会暂存当前修改（含暂存区和工作区），并让工作目录恢复到上次提交（HEAD）状态。
+git status 的作用是什么？	查看工作区，暂存区以及仓库三者的状态。
+为什么在执行 git pull 前要先处理本地代码？	因为若有未提交修改直接拉取，Git 会尝试合并远程和本地代码，容易引发合并冲突。
+git pull --rebase 中的 rebase 是什么意思？	表示在拉取远程更新时，把本地提交重新排列在最新的远程提交之后，以保持提交历史更整洁。
+git pull --rebase 和 git pull 有什么区别？分别等同于哪些指令组合？	git pull = git fetch + git merge git pull --rebase = git fetch + git rebase
+git pull = git fetch + git merge 的缺点是什么？	它会生成合并提交（Merge commit），使提交历史混乱，充满类似 “Merge branch 'main' of ...” 的信息。
+git pull --rebase = git fetch + git rebase 的优点是什么？	它会先拉取远程代码，再将本地提交依次应用在其上，保持线性、干净的提交历史，避免多余的合并节点。
+如果之前使用了 Stash，想恢复修改，应使用什么指令？	使用 git stash pop。
+Git 的工作流程中有哪三个区域？它们的作用是什么？	工作区（Working Directory）：你实际编辑文件的地方。 暂存区（Staging Area）：保存准备提交的修改。 本地仓库（Local Repository）：存储所有提交历史的地方。
+git status 会显示哪个区域的状态？	显示当前工作目录和暂存区的状态。
+git status 输出中 “Changes not staged for commit” 表示什么？	表示工作区中已修改但尚未添加到暂存区的文件。
+git status 输出中 “Changes to be committed” 表示什么？	表示已放入暂存区、准备提交的文件，也就是执行过 git add 的内容。
+git status 输出中 “Untracked files” 表示什么？	表示工作区中新建但未被 Git 跟踪的文件。
+运行 git status 返回以下信息表示什么？ On branch main   Your branch is up to date with 'origin/main'.   nothing to commit, working tree clean	表示工作区、暂存区和最新提交完全一致，没有未提交的更改。
+“Changes not staged for commit” 和 “Changes to be committed” 分别表示什么？	前者表示未暂存的修改，后者表示已暂存、待/将提交的修改。
+git status 的指导行动具体指的是什么？	它会告诉你下一步该执行什么操作，比如使用 git add 将修改添加到暂存区，或者使用 git commit 提交已暂存的更改。
+在做任何操作（如 commit、pull、push、merge）之前，先运行哪个指令是一个好习惯？	运行 git status，检查当前的变化处于哪个阶段（是仅仅修改了，还是已经准备好提交了）。
+每日开始工作时的 Git 流最佳实践是什么样的？	"检查状态: git status处理本地修改: git add . -> git commit -m ""...""拉取远程更新: git pull --rebase推送本地修改: git push"
+git status 显示 nothing to commit, working tree clean 意味着接下来可以放心进行什么操作？	可以放心进行 git pull --rebase，因为没有未提交的修改。
+为什么一直推荐使用 git pull --rebase？	"因为它能保持提交历史线性、清晰，避免了大量不必要的 ""Merge branch..."" 提交记录，这在团队协作中能保持更加整洁的历史，便于追踪和理解每个提交的变动。"
+开始一天的工作前，Git 操作的完整工作流是什么？	"运行 git status执行 git add .执行 git commit -m ""...""执行 git pull --rebase执行 git push"
+使用 ls -a 看到 .git，意味着什么？	这表示当前目录是一个 Git 仓库，你可以在此目录及其子目录中使用 Git 命令。
+如何判断是否可以在当前目录下运行 Git 指令？	如果在当前目录下运行 ls -a 或 dir /a，看到 .git 文件夹，则说明该目录是一个 Git 仓库，可以执行 Git 指令。
+为什么在项目根目录和深层子目录里执行 git status 效果一样？	因为 Git 会从当前目录开始查找 .git 目录，如果找不到，就会向上一级父目录查找，直到找到 .git 目录为止。所以在项目的任何子目录下执行 Git 命令，都会作用于整个 Git 仓库。
+删除 .git 目录意味着什么？	删除 .git 目录等于删除了整个 Git 仓库的历史记录。你的项目会变成一个普通文件夹，所有的分支、提交记录和版本信息都会丢失。
+如何快速判断当前目录是否可使用 Git 指令？	运行 ls -a（或 dir /a），如果能看到 .git 目录，就说明该目录是 Git 仓库，可以使用 Git 指令。
+“Your branch is up to date with 'origin/main'” 表示与真正的远程分支完全同步的意思？	不是的，表示你的本地分支与本地缓存的远程分支状态一致，并不一定与真正的远程分支完全同步。
+团队协作中使用 Git 的黄金法则是什么？	提交后先拉再推（commit，pull --rebase，push）。
+Git 执行 pull 操作最安全、最理想的前提是什么？	当status命令返回 “nothing to commit, working tree clean” 时。
+Git 状态显示 “working tree clean” 意味着什么？	表示暂存区、工作区和本地仓库内容完全一致。
+Git 状态显示 “working tree clean” 时，三区完全一致，这里的“完全一致” 指的是什么？	表示工作区中所有被跟踪的文件与 HEAD（本地最新提交）内容完全相同，暂存区为空，没有待提交的更改。
+执行 git pull 时出现 “Already up to date.” 表示什么？	表示本地分支与远程分支内容相同，没有新的更新可拉取。
+“working tree clean” 这个信号表示当前工作区干净，可以执行哪些操作？	git pull、git switch 或 git merge 等操作的最佳时机。
+当执行 git push 返回 “Everything up-to-date” 时，这意味着什么？	表示本地分支与远程对应分支的提交历史完全一致，没有新的提交需要推送，所以它什么也没做。
+rebase（变基）的核心思想是什么？	把自己的提交应用到远程分支的最新版本之上。
+在你提交了本地提交 B，而远程已有提交 C 的情况下，执行 git pull --rebase 会发生什么？       B  (你的本地提交)     /A --- C  (远程仓库的最新状态 origin/main)	fetch：Git 先获取远程最新提交 C，不修改本地代码，此时本地知道远程历史为 A---C。rebase：暂时收起你的本地提交 B，使分支回到 A。将本地分支快进到远程最新提交 C。再把提交 B 应用到 C 之上，生成新的提交 B'，内容与 B 相同，但父提交由 A 变为 C。
+B  (你的本地提交)      / A --- C  (远程仓库的最新状态 origin/main) 执行完 git pull --rebase 后，提交历史会变成什么样？	会变成一条干净的直线：A --- C --- B'（你的本地 main 同步为最新的 origin/main）。
+B  (你的本地提交)      / A --- C  (远程仓库的最新状态 origin/main) 在相同场景下，如果不使用 --rebase，直接执行 git pull 会怎样？	Git 会执行 fetch + merge，结果如下：        B --.      /        \ A --- C --- M  (你的本地 main) 其中 M 是新生成的合并提交，用于把本地提交 B 与远程提交 C 合并，不包含任何功能性修改。
+git pull --rebase 和 git pull 在提交历史上的区别是什么？	git pull --rebase：保持线性历史，提交记录是一条干净直线，清晰易读。git pull（merge）：会产生分叉和合并节点，频繁推送时历史会变得复杂，充满合并提交 M，难以追溯。
+想快速比较远程仓与本地仓内容是否一致，最简单直观的命令是什么？	git fetch origin && git status
+git fetch origin 会修改本地代码吗？	不会，它只更新本地对远程分支的引用，不影响工作区内容。
+在使用 git status 查看分支状态时，可能出现哪三种情况？它们分别代表什么？	ahead：本地分支比远程多出若干提交。behind：远程分支有新的提交，本地尚未拉取。up to date：本地与远程分支完全一致。
+git status 除了显示工作区和暂存区的状态外，还能显示什么？	还能显示分支间的状态差异，包括三种情况：ahead、behind、up to date。
+连用 git fetch origin && git status 时，这两个命令分别有什么作用？	git fetch origin：更新本地对远程分支的引用，不修改本地代码。git status：显示当前分支与远程分支的状态差异。
+查看当前本地仓库对应远程仓库链接的命令是什么？	git remote -v
+修改远程仓库链接的命令是什么？	git remote set-url origin <new-url>
+HPC 是什么意思？	HPC 指 High Performance Computing（高性能计算）。
+GPU最早用来做什么？现在又用于什么？	最初用于图像渲染，如今因其高度并行结构，被广泛应用于科学计算和机器学习。
+AMD 的 GPU 平台生态叫什么？	ROCm
+在 Linux 中，复制单个文件和整个文件夹分别用什么命令？	复制文件用 cp，复制目录用 cp -r。
+ls -1 表示什么？	按一行一个文件的方式列出当前目录内容。
+cp 命令中两个路径分别表示什么？	第一个是源文件路径，第二个是目标目录路径。
+用哪个 Git 指令可确定本地仓与远程仓是否一致？	git fetch origin && git status git fetch origin 更新本地的远程分支引用；git status 显示当前分支与远程分支的差异。
+在 VS Code 中全局搜索单词的位置如何做呢？	左上角顶部有个放大镜的图标
+学术会议中的“主 track”是什么意思？	指会议的核心论文投稿与评审通道，也是学术成果的主体部分。  “主 track” = 会议的主会（main conference）。
+投稿被主 track 接收通常意味着什么？	经历完整的双盲评审（3–5 位评审人）； 在学术质量、创新性和实验充分性上达标； 论文将被正式收录至出版社的会议论文集。
+现代电脑几乎都是多少位？	64
+下载 Git 后如何安装并测试是否成功？	使用默认选项一路 “Next” 安装，完成后在终端输入 git --version 检查是否安装成功。
+git remote -v 中的 -v 全称是什么？	全称是 --verbose，表示显示详细信息。
+git config --global 配置的 user.name 和 user.email 有什么作用？	用于标识提交代码时的身份。
+想在 Git 提交时忽略项目目录下的 repo_cuda2hip_code 文件夹，该怎么做？	在与 .git 同级的位置新建 .gitignore 文件，写入： repo_cuda2hip_code/
+如果 output/ 目录下的文件已被 Git 追踪，现在把 output/ 加入 .gitignore，Git 还会继续追踪它们吗？为什么？需要怎么做？	会继续追踪，因为 .gitignore 只能忽略未被追踪的文件。要停止追踪，需要将这些文件从 Git 索引中移除。
+一旦使用 git add xxx，xxx 就会被 Git 追踪吗？	是的。git add 会将文件加入索引，从而开始被 Git 追踪。
+使用什么指令意味着文件会被 Git 追踪？	执行 git add xxx 即表示该文件开始被 Git 追踪。
+git rm -r --cached output/ 是什么意思？	表示从 Git 索引中递归移除 output/ 目录及其文件，但不删除本地文件。
+git rm -r --cached output/ 中的 cached 指的是缓存还是 Git 索引？	指的是 Git 索引（暂存区），不是普通意义的缓存。
+Git 索引和 Git 暂存区是同一个东西吗？	是的，Git 索引就是 Git 的暂存区。
+git rm -r --cached xxx 中的 cached 本质上是什么？	本质上指 Git 的 暂存区
+验证当前 Git 的用户名和邮箱的指令是什么？	git config user.name    git config user.email
+配置 Git 用户信息需要设置哪两个内容？	用户名（name）和邮箱（email）。
+"git config --global user.email ""xxx"" 中 --global 的作用是什么？去掉后又代表什么？"	--global 表示全局配置，对所有仓库生效；去掉后则只对当前仓库生效。
+查看当前仓库的用户名和配置用户名的指令分别是什么？	"查看：git config user.name    配置：git config --global user.name ""xxx"""
+为什么使用 Git 时需要配置用户名和邮箱？	用于记录每次提交的作者信息，便于追踪和管理代码历史。
+在 rebase 中，git checkout --theirs 和 git checkout --ours 的含义分别是什么？	--theirs：保留当前正在应用的提交（你的本地提交）。   --ours：保留当前 rebase 基准上的代码（原分支的内容）。
+git pull --rebase 冲突时，为什么 --ours 表示远程分支，而 --theirs 表示你的本地提交？  为什么这么反直觉？	"因为 rebase 的过程是先切到远程分支作为新的基础（因此是 ""ours""），再把你的本地提交逐个应用上去（因此成了 ""theirs""）。"
+使用 git pull --rebase 拉取更新后，GitHub 上的版本会被改变吗？	不会。git pull --rebase 只拉取并在本地变基，只有执行 git push 才会更新 GitHub。
+Git 进行什么git指令之后才算产生一个新的版本？	在 commit 时才会产生新的版本；add、push、pull 都不会创建版本。
+已确定 GitHub 是最新正确版本，本地分支有问题，想以远程为主，应输入什么指令？	使用 git fetch origin 再执行 git reset --hard origin/你的分支名。
+已确定 GitHub 是最新正确版本，本地分支有问题，想以远程为主，git fetch origin & git reset --hard origin/你的分支名？为什么使用这两个指令？	因为 fetch 会更新本地对远程分支的最新引用，确保 reset 基于的是 GitHub 最新版本。
+如果想以远程分支为主、本地分支不要了,是否可以用 pull 吗？以及原因是什么？ 应该使用什么？	不能使用pull，因为pull 会把远程修改合并到本地，应该使用reset，因为 reset 会直接将本地重置为远程状态，避免合并本地的错误内容。
+git rev-parse --short HEAD 中的 rev、parse、HEAD 各是什么意思？	rev 是 revision 的缩写，表示“版本”。 parse：表示“解析”引用字符串。   rev-parse：Git 的内部解析工具，用于解析版本号或引用。   HEAD：表示当前所指向的提交。
+查看当前分支的提交哈希值可以用哪些指令	git rev-parse --short HEAD   git log -1 --oneline   git branch -v
+git log -1 --oneline 中的 -1 和 --oneline 各有什么作用？	-1：只显示最近一条提交。   --oneline：以单行简洁格式显示提交记录。
+使用两台设备操作同一个仓库时，是否理想状态是两边分支的哈希一致？  以及为什么？	是的。两端的分支哈希一致，表示代码版本完全同步，是理想状态。
+两台设备上同一个分支的提交哈希值完全一样，那么意味着什么？	那么这两个仓库的代码内容就 100% 同步。
+git fetch && git reset --hard origin/main 的执行了具体什么操作和使用场景是什么？	它先拉取远端最新代码，再将本地代码强制重置为远端 main 分支的状态， 常用于放弃本地修改、让本地代码完全同步远端版本。
+"# 远程： A -- B -- C (origin/main) # 本地： A -- B -- D (你的提交) 使用 git pull 和 使用 git pull --rebase，提交历史有什么差异，画出来。"	"git pull # 结果： A -- B -- C ---- #                     \             \ #                        -- D --- M (合并提交)  git pull --rebase # 结果： A -- B -- C -- D' (你的提交被""移动""到C之后)"
+"确定远程版本是""正确的""，完全放弃本地修改，使用什么git指令？"	git fetch origin git reset --hard origin/main
+git rev-parse --short HEAD 如何用别名简化？	"可设置全局别名：git config --global alias.hash ""rev-parse --short HEAD""   之后直接执行：git hash"
+git log -1 --oneline 里面的 log ，-1， --oneline分别是什么意思？	log = 日志 -1 = 最近1条 --oneline = 一行显示
+git clone 里的 --depth 1 参数有什么作用？	只克隆最新一次提交，减少下载量和时间。
+git clone 里的 --depth 1 参数什么时候使用？	在只需要项目最新代码、不需要完整提交历史时使用，如快速拉取、构建或部署。
+git clone 里的 --depth 1 参数有什么好处？	
+git clone 里的 --depth 1 参数有什么好处？	能大幅减少下载时间和磁盘占用。
+使用 git clone 时，不加上 --depth 1 为什么慢、占用更大？	因为它 拉取完整历史，包括所有提交、分支、标签和文件的历史版本
+批量下载十几个github仓库，最佳方式是什么？	把所有 git clone 指令写进一个 bash 脚本中，再通过 bash clone_repos.sh 一次执行全部下载。
+bash clone_repos.sh(包含多个git clone指令) 执行后，仓库会下载到哪里？  为什么？	取决于你执行命令时的当前工作目录，不取决于脚本所在位置。   因为脚本里的 git clone 默认按运行时的工作目录创建仓库，除非脚本中指定了路径。
+想确认当前所在目录的完整路径，输入什么指令？	输入 pwd。
+已经在 .gitignore 中写了 draft/，但之前已被 git add 过，如何删除缓存？	使用命令删除缓存中的 draft/ 目录：   git rm -r --cached draft/
+文件一旦被 git add 过， 就表示被 Git 怎么样？	被git管理、跟踪并加入索引  是的，git add 会将文件加入暂存区，开始被 Git 跟踪并写入索引。
+Git 的“缓存”指的是什么区？	通常说的 Git 缓存就是指暂存区。
+用什么指令来停止追踪已被 Git 追踪的文件？	使用 git rm --cached 来取消文件的追踪。
+git rm -r --cached draft/ 中各部分是什么意思？	git rm：从 Git 中删除文件记录   -r：递归处理目录及其内容   --cached：只从索引中删除，不删除本地文件   draft/：指定要移除追踪的目录
+git rm -r --cached draft/ 之后不应该先 add 再 commit 吗？为什么执行 git rm 后直接 commit？	git rm --cached 和 git add 一样，都是对暂存区的修改操作。执行 git rm --cached 后，变更已进入暂存区，因此无需再执行 add，直接 commit 即可。
+CRLF/LF 指的是什么？分别是谁的风格？	CRLF：回车+换行，Windows 的换行风格   LF：仅换行，Unix/Linux 和 macOS 的换行风格
+Carriage Return 和 Line Feed Carriage 不是马车，feed 不是喂食吗？	在打字机术语里：    Carriage（字车）：指打字机上移动的承纸机构，并非“马车”。   Feed（送进）：指机械将纸张向下送一行的动作，不是“喂食”。
+Carriage Return 为什么叫“回车”，Line Feed 为什么叫“换行”？	Carriage Return：来源于打字机，将“字车”拉回到行首，所以叫回车。   Line Feed：让纸向下走一行，所以叫换行。
+回车（CR）和换行（LF）的英文全称是什么？	CR：Carriage Return   LF：Line Feed
+“CRLF：回车+换行” 应该怎么理解？回车不是换行吗？	回车（CR）和换行（LF）是两个不同的控制符：   CR：把光标移到行首   LF：让光标向下移动一行   Windows 使用 CR+LF 两个字符来表示换行，Unix 系统只用 LF。
+Windows 和 Unix 系统分别是用什么表示换行	Windows 使用 CR+LF 两个字符来表示换行，Unix 系统只用 LF。
+Git 仓库通常存储为 LF，这是为什么？	因为 LF 是跨平台协作的通用标准，能避免不同系统的换行差异造成冲突。
+在老式电传打字机上，回车（CR）和换行（LF）的效果分别是什么？	CR：让打印头回到行首   LF：让纸上滚一行
+为什么主流使用 LF 而不是 CRLF？	因为 LF 是多数派：Unix/Linux/macOS 主流使用，服务器多跑在 Linux，上游开源项目也普遍采用 LF。
