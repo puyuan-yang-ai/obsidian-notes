@@ -1,0 +1,56 @@
+amd-ai-mcp MCP服务器需要手动启动吗？ | 不需要，Agent会自动调用它。
+MCP服务器程序安装在什么位置？ | 安装在conda环境（如amd-devtool）中。
+Cursor IDE在什么条件下会启动MCP服务器？ | 读取到.cursor/mcp.json配置文件后会自动启动。
+MCP服务器的本质是什么？由虚拟环境启动吗？ | 是独立的后台进程，由IDE或Agent启动管理，虚拟环境不会主动启动它。
+项目级和全局级的MCP配置文件路径分别是什么？ | 项目级：.cursor/mcp.json；全局级：~/.cursor/mcp.json
+MCP配置可以跨项目共享吗？ | 可以，放在全局配置文件~/.cursor/mcp.json中即可。
+Cursor IDE读取配置文件后会执行什么操作？ | 启动对应的MCP服务器进程。
+如何理解MCP服务器、虚拟环境、MCP协议、Cursor IDE之间的关系和角色？ | MCP服务器是图书室（提供数据）；虚拟环境是图书馆大楼（存放环境）；MCP协议是电话线（通信标准）；Cursor IDE是前台服务员（管理者）；终端与MCP服务器互不相关。
+MCP服务器的真实身份是什么？ | 是一个独立运行的后台程序。
+为什么Cursor读取配置后要自动启动MCP服务器？ | 为了让AI助手能够随时调用MCP工具，因此保持后台运行。
+在Cursor IDE中，谁负责启动MCP服务器？谁负责调用MCP服务器？ | Cursor IDE负责启动和管理；AI助手根据用户需求决定调用。
+虚拟环境的本质是什么？ | 电脑上一个普通文件夹，包含Python程序和已安装的工具包。
+MCP服务器的本质是什么？ | 和Chrome、微信一样的普通程序，功能是读取知识库、接收查询、返回结果。
+日常说的MCP通常指什么？ | 通常指MCP协议，但也常用来指代MCP服务器。
+IDE（如Cursor）和MCP服务器如何协作？ | Cursor负责启动管理MCP服务器，让它在后台持续运行，供AI助手随时调用。
+"MCP工具装在特定环境，进入环境后任何项目都能用"这个说法对吗？ | 错误。虚拟环境只是程序的存放位置，无需"进入"，Cursor会用完整路径直接启动程序。
+MCP工具安装后需要手动进入虚拟环境才能用吗？ | 不需要。虚拟环境只是存放位置，Cursor直接用完整路径启动，无需进入。
+MCP和Agent是什么关系？ | MCP是Agent的工具箱，Agent可以调用MCP提供的各种工具。
+MCP工具是自动触发的吗？ | 不是，由用户的问题触发调用，不是代码自动执行。
+MCP服务器的管理者和使用者分别是谁？ | 管理者：IDE（如Cursor）；使用者：AI Agent
+在Claude Code环境中，MCP服务器的管理者和使用者是谁？ | 管理者：Claude Code IDE；使用者：Claude AI Agent
+MCP的完整名称是什么？ | Model Context Protocol（模型上下文协议）
+MCP协议的主要作用是什么？ | 让AI助手能够读取外部数据、执行操作、扩展自身能力。
+MCP有什么好的类比？ | 就像是AI的"工具箱"，AI根据用户问题决定使用哪个工具。
+怎样查看Cursor中可用的MCP工具？ | 1.直接问AI有哪些工具；2.查看.cursor/mcp.json文件；3.用Ctrl+Shift+P搜索"MCP"
+在LLM系统中"工具"指什么？ | 外部的功能服务，如数据库查询、文件操作、网络请求、发送邮件等。
+MCP采用什么架构模式？ | 客户端-服务器架构，包含MCP client（AI端）和MCP server（服务端）。
+MCP tools具体指什么？ | MCP服务器对外暴露的可调用功能接口。
+MCP server和MCP tools是什么关系？ | MCP server是容器，内含多个tools。
+为什么MCP tools比普通函数更正规？ | 带有metadata/schema定义，是规范化的可调用单元，明确定义了参数、返回值、权限等。
+MCP server只提供函数功能吗？ | 不是，还提供resources（文件、数据库）和prompts/templates等。
+请分别说明MCP、MCP Server、MCP Tools的含义 | MCP：通信协议标准；MCP Server：提供数据和功能的服务实现；MCP Tools：暴露出来的可调用功能。
+MCP Tools的恰当比喻是什么？ | 就像函数、方法或API接口
+MCP解决了什么问题？ | 让AI模型与外部工具能够标准化通信。
+MCP的核心工作机制？ | MCP server向LLM暴露一组可调用的tools。
+每个tool包含哪些信息？ | 工具名称、参数结构、返回结构、功能说明等。
+现有服务要转成MCP tool需要重写吗？ | 不需要，加一层adapter/wrapper包装即可。
+怎么把Python函数变成MCP tool？ | 用@mcp.tool()注解装饰函数。
+如何暴露资源或prompt模板？ | 使用@mcp.resource()、@mcp.prompt()等注解。
+什么情况适合用注解自定义MCP工具？ | 有业务逻辑或内部功能需要暴露时，如数据库操作、文件处理、内部API调用等。
+MCP server的两种注册方式？ | decorator注册（主流）和schema注册
+这两种注册方式各有什么特点？ | decorator注册：简单易用，是主流方式；schema注册：手动实现，更底层但复杂
+FastMCP是什么项目？ | 专门构建MCP Server和Client的Python框架
+FastMCP解决了什么问题？ | 封装了MCP协议的底层细节，让开发者像写普通函数一样构建MCP服务
+FastMCP是临时项目吗？ | 不是，已是官方MCP Python SDK的一部分
+MCP中的"注册"指什么？ | 把tool/resource/prompt添加到MCP Server的能力列表中，让它可以被外部调用。
+函数注册为tool后有什么效果？ | LLM或客户端就能发现并调用这个工具。
+"注册"在MCP中的准确含义？ | 将功能添加到MCP Server的注册表，使其对外可用。
+构建MCP服务器推荐用什么框架？ | FastMCP
+mini-swe-agent的设计特点是什么？ | 只使用bash命令，通过subprocess.run执行所有操作
+Function call/Tool call机制的作用？ | LLM需要实时数据或执行操作时，能调用外部工具而不是凭空生成答案。
+需要为LLM提供什么信息？ | 工具的定义，包括名称、功能说明、参数要求、返回格式等。
+LLM判断需要工具时会输出什么？ | 工具调用指令（JSON格式，包含工具名和参数）
+LLM会自己执行function代码吗？ | 不执行，只产生调用指令，由外部系统执行
+MCP相对于function-call有什么优势？ | 是function-call的升级版，提供了标准化和扩展性
+MCP被形象地比喻为什么？ | "AI的USB-C接口" - 任何符合标准的工具都能即插即用地接入AI
