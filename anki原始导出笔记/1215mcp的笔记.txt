@@ -1,0 +1,41 @@
+#separator:tab
+#html:false
+clone 代码后用 pip install -e . 安装的，直接在 mini.yaml 里填 api_key 就行，改完保存为什么立马生效？	因为 editable install 会创建指向源码目录的链接。
+在agent开发里面，一种常见的配置分离模式是什么样的？	.env 里面是全局配置,存放 API keys、默认模型名等敏感信息，通常不提交到 git xxx.yaml 里面是Agent 配置,agent 的运行配置（prompts、模型参数等），可以提交到 git
+在mini-swe-agent里面，mini.yaml 是什么时候读取？	运行时读取的配置文件 每次运行 mini 命令时都会重新加载配置
+如果你不记得容器名，应该输入什么之类？	docker ps
+pip install . 和 pip install -e . 这两种安装方式分别是名字以及分别的效果是什么？	"pip install .	叫做普通安装，效果是，把代码复制到 site-packages 目录 pip install -e .	叫做可编辑安装，或者开发模式安装，效果是，在 site-packages 创建链接指向源码目录"
+可编辑安装，相比于普通安装的好处是什么？	可编辑安装，修改代码立即生效，修改源码 → 立即生效 → 不需要重新安装。如果用普通安装，每次改代码都要重新 pip install .，很麻烦。
+ai-devtool mcp server这个项目，不安装，那么另一个项目就不能用吗？	能用，但很麻烦
+ai-devtool mcp server这个项目，需要在另一个项目里面引用，安装ai-devtool 后使用相比于直接使用，优势是什么？	"1 不安装的情况下，import amd_devtool  之前每次都要加路径，安装后，在任何目录都能直接用 import amd_devtool  # 直接就能用，不用管路径 2 amd-ai-devtool 提供了命令行工具，安装后就能直接在终端用，安装后可能就能直接用这样的命令 amd-devtool --help 3 自动安装依赖，pip install -e . 会读取 pyproject.toml，自动安装这个包需要的所有依赖。"
+一句话总结，安装 ai-devtool mcp server项目和不安装的效果有什么不同？	"不安装	只能在那个目录里用，每次都要手动指定路径，安装后	全局可用，就像用 import os 一样方便。"
+@dataclass 是干什么的？	@dataclass 是 Python 的一个装饰器，它会自动生成 __init__ 方法，根据类中定义的字段和默认值来初始化对象。
+"@dataclass class 父类:     name: str = ""默认名字""  class 子类(父类):     name: str = ""自定义名字""  # 创建对象时 obj = 子类() print(obj.name)  这时候输出结果是什么以及为什么 ？"	"# 输出：默认名字 ← 用的是父类的默认值！因为子类没有 @dataclass"
+没有 @dataclass：子类为什么会使用父类的默认值？	因为子类没有自己的 __init__，调用父类的 __init__，进而使用父类的默认值
+目前mini-swe-agent里面通过environment方式整合了ai-devtool mcp server，每次都有 2 次 HTTP 请求llm，分别是什么样的？	"有 2 次 HTTP 请求	第 1 次：LLM 生成 @amd:query；第 2 次：LLM 总结结果"
+mini-swe-agent通过environment的方式结合了mcp，进行了2次调用，第一次是ai-devtool mcp server，第二次才是走http请求来访问llm api，是吗？	"是不准确的，顺序是：LLM → MCP → LLM，不是 MCP → LLM。 具体如下：   用户输入任务     ↓ 第 1 次 HTTP 请求 → LLM API → LLM 返回 ""@amd:query {...}""     ↓ Agent 执行命令 → 调用 MCP Server → 获取结果     ↓ 第 2 次 HTTP 请求 → LLM API → LLM 基于结果生成总结     ↓ 返回给用户"
+mini-swe-agent通过environment来调用mcp，是否强制首先调用 MCP？	不是技术上的强制，是 Prompt 里的要求。LLM 读到这个指令后，选择先生成 MCP 命令。但这只是 prompt 工程，不是代码层面的强制。
+标准 MCP Client 的做法里面，Tool list（工具列表）和 Tool 执行结果 这两个信息分别放在哪里？	"Tool list（工具列表），	通过 MCP 协议从 server 获取，动态注入到 system prompt， Tool 执行结果，添加到 conversation history（通常作为 user message 或 tool result）。"
+mini-swe-agent通过environment来调用mcp，调用顺序里面两次调用LLM分别作用是什么	调用顺序：LLM (生成命令) → MCP (执行) → LLM (总结) 第一次是生成MCP的调用指令，第二次是对MCP执行的结果进行总结
+mini-swe-agent里面get_observation函数的核心逻辑是什么？	1 对模型返回的内容进行解析，然后并执行解析后的结果 2 将解析后的结果拼入到模板里面渲染成特定格式的文本作为observation 3 将observation送入到user message里面
+目前最主流的 Agent 设计模式是什么？	ReAct (Reasoning + Acting)
+ReAct (Reasoning + Acting) 是目前最主流的 Agent 设计模式，其中，ReAct 循环 是什么样的？	1. LLM 思考 + 生成 Action (Assistant message)                2. 执行 Action，获取 Observation                             3. Observation 作为 User message 反馈给 LLM                  4. LLM 基于 Observation 继续思考... (循环)
+主流的agent设计里面，为什么Observation 作为 User message 反馈给 LLM？	"符合 LLM 训练模式：LLM 被训练成 ""assistant 回复 → user 反馈 → assistant 继续"" 的模式便于多轮推理：LLM 可以基于 observation 决定下一步行动"
+mcp的Tool 结果存在agent里面的哪里？	"作为 role: ""user"" 的 message 添加到对话历史"
+mini-swe-agent里面，通过environment方式来兼容ai-devtool mcp server， MCP 模式和默认模式，这两种启动方式分别是什么？	python run_agent.py -i，mini
+mini.yaml里面，system_template提示词模板的角色是什么？	"作用：定义 LLM 的角色和基本规则，比如角色定义：""helpful assistant""，响应格式要求，THOUGHT 思考过程要求"
+mini.yaml里面，instance_template 提示词模板的角色是什么？	作用：定义任务说明和工作流程，比如：任务描述，推荐工作流程（分析→复现→修复→验证），重要规则，命令示例（创建文件、sed 编辑等）
+mini-swe-agent里面，使用 MCP 方案时的覆盖 mini.yaml里面，哪两个模板？以及如何去覆盖？	"system_template	✅ 被覆盖	替换为 MCP 专用 prompt（包含工具列表） instance_template	✅ 被覆盖	替换为 MCP 任务模板（强制使用工具）"
+mini-swe-agent里面使用mcp方案的时候，需要修改instance_template ，往里面加入了什么东西?	MCP 工具列表以及说明，告诉模型可以利用的工具有哪些
+mini-swe-agent里面使用mcp方案的时候，需要修改instance_template，往里面加入了什么东西?	接受用户的提问之后，强制先用 @amd:query 查询
+mini-swe-agent里面system_template、instance_template，这两个部分分别是专注什么方面？	system_template核心角色，instance_template任务定义以及工作流
+使用MCP Client方案，那么 是否调用tool 由LLM 的 tool_use 机制决定，这意味着什么？	模型自主决定是否调用 MCP，无法保证每次都走。
+MCP Client方案由 LLM 的 tool_use 机制决定，这是什么意思？	模型自主决定是否调用 MCP，无法保证每次都走。具体来说，完整 MCP Client 方案中，LLM 会根据自己的判断决定是否调用工具，控制力较弱。
+选择当前方案（扩展 Environment）而不是完整 MCP Client的原因，在进程方面的优势是什么？	"直接 import Python 代码，无额外进程	，而MCP Client方案 需要启动 MCP Server 进程"
+选择当前方案（扩展 Environment）而不是完整 MCP Client的原因，在解耦方面的好处是什么？	展 Environment这个方案，实现了解耦，不修改 Agent 核心代码，对原有的代码没有侵入性，独立目录，而MCP Client方案需要大范围修改代码，需要实现 MCP 协议
+选择当前方案（扩展 Environment）而不是完整 MCP Client的原因，在控制力方面的好处是什么？	"扩展 Environment这个方案里面，控制力更好，可通过 prompt 精细控制调用时机，而MCP Client方案由 LLM 的 tool_use 机制决定，模型自主决定是否调用 MCP，无法保证每次都走。具体来说，完整 MCP Client 方案中，LLM 会根据自己的判断决定是否调用工具，控制力较弱。 扩展 Environment的方案里面，可以通过 prompt 可以精细控制：强制首先调用 MCP：""Your FIRST response MUST be an @amd: tool command""，控制调用时机：可以要求 ""每次回答前必须查询""，控制输出格式：可以要求特定的总结格式，禁止某些行为：""DO NOT answer from your own knowledge"""
+mini-swe-agent接入ai-devtool mcp server之后，整体的工作执行流程是什么样的？	用户输入任务LLM 被要求先调用 @amd:query 查询知识库MCP Server 返回专业知识LLM 基于知识库内容生成回答
+在服务器上开发的呀，所以代码应该也在服务器,那我怎么给它弄下来呢	"使用 scp 下载到本地,在你的本地电脑上执行  # 下载 mcp_integration 目录 scp -r 用户名@服务器地址:/path/to/mcp_integration ./ 由于配置了 SSH，可以直接用别名 mi308 连接，比如：scp -r mi308:/path/to/mcp_integration ./"
+rompts.py 里面的COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT 作用是什么？	"这是 mini-swe-agent 中定义的 任务结束信号。  has_finished() 检测匹配 ""COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT""，匹配到之后，抛出 Submitted 异常，通过抛出异常的方式来跳出循环，捕获异常，返回 (""Submitted"", ""这是最终总结\nHIP 是..."")"
+mini-swe-agent里面通过environment的方式使用了mcp，那么INSTANCE_TEMPLATE里面的流程是如何改变的？	强制 LLM 第一步必须调用 MCP 工具- 不能直接回答，必须先查询知识库- LLM 需要从用户任务中提取关键词
+INSTANCE_TEMPLATE 这个提示词模板里面强制 LLM 第一步必须调用 MCP 工具，意味着什么？	- 不能直接回答，必须先查询知识库  - LLM 需要从用户任务中提取关键词
