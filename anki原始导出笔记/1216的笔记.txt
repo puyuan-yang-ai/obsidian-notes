@@ -1,0 +1,80 @@
+#separator:tab
+#html:false
+mini-swe-agent里面multi-turn 对话的结束标志是什么？	Agent 检测到 COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT，立即结束
+has_finished() 没有检测到结束信号，那么会怎么样？	添加 observation ,继续下一轮
+has_finished() 检测到结束信号，那么会怎么样？	raise Submitted  ,被 except 捕获,  return 结果, 循环结束，任务完成
+Agent 如何知道任务完成了,使用固定轮数的方案，存在的问题是什么？	不灵活，简单任务浪费，复杂任务不够
+"Agent 如何知道任务完成了,使用 LLM 说""我完成了""的方案，存在的问题是什么？"	不可靠，难以解析
+Agent 如何知道任务完成了,使用特殊信号的方案，比如返回“COMPLETE_TASK_XXX”,优点是什么？	明确、可靠、易于检测
+mini-swe-agent里面使用 Python 异常来控制循环的流程，相关的代码是什么？以及这样的好处是什么？	"raise Submitted(""最终结果"")  # 直接跳出多层循环，  简洁	，不需要复杂的状态判断， 安全	，异常会自动向上传播，不会遗漏， 携带数据，	异常对象可以携带最终结果。"
+mini-swe-agent是如何实现结束Multi-turn 对话？	has_finished() 检测到信号后抛出 Submitted 异常
+mini-swe-agent为什么使用异常来结束Multi-turn 对话？	可以立即跳出 while 循环，并携带结果
+mini-swe-agent里面-d 这个参数是如何增加输出的？	"关键机制：使用不同的类  def create_agent(..., debug: bool = False):     ...     if debug:                                        # ← -d 参数为 True         env = DebugMCPEnvironment()                  # ← 使用调试版 Environment         agent = DebugAgent(...)                      # ← 使用调试版 Agent     else:                                            # ← 不带 -d         env = MCPEnabledEnvironment()                # ← 使用普通版 Environment         agent = DefaultAgent(...)                    # ← 使用普通版 Agent"
+mini-swe-agent里面不带-d和带-d，分别会使用什么environment以及agent？	不带-d： MCPEnabledEnvironment  →  执行命令，返回结果 DefaultAgent           →  调用 LLM，解析响应 带-d:  DebugMCPEnvironment(MCPEnabledEnvironment)  →  继承 + 添加 print DebugAgent(DefaultAgent)                     →  继承 + 添加 print
+mini-swe-agent里面带-d 和 不带-d，执行的是同样的逻辑吗？以及为什么？	✅ 是的，核心逻辑完全相同，-d参数会走另一个类，而这个类是使用继承的调试版类，在方法前后添加 print，这种是装饰器模式 / 继承重写模式。
+-d参数来增加输出，背后使用的是什么设计模式？	装饰器模式 / 继承重写模式
+-d 参数增加输出，是使用继承的调试版类，这样的好处是什么？	不修改原始代码，通过继承扩展功能
+SYSTEM_TEMPLATE 和 INSTANCE_TEMPLATE 这两个名字来自 LLM 对话的标准结构：分别对应的消息角色role以及解释说明是什么？	"SYSTEM_TEMPLATE对应的是	role: ""system""	，含义是系统提示词，定义 AI 的角色和规则 INSTANCE_TEMPLATE对应的是	role: ""user"" (第一条)，含义是	实例/任务提示词，定义具体任务"
+SYSTEM_TEMPLATE 和 INSTANCE_TEMPLATE 这两个模板分别的作用是定义什么？	"SYSTEM_TEMPLATE	定义 AI ""是谁""、""能做什么""、""规则是什么"" ， INSTANCE_TEMPLATE	定义 ""当前任务是什么""。"
+@dataclass 装饰器是 Python 自带的吗？	是的！ 从 Python 3.7 开始就是标准库的一部分：
+下面的代码等价于什么代码？   @dataclass class Person:     name: str     age: int	"# 自动生成 __init__, __repr__, __eq__ 等方法！  class Person:     def __init__(self, name: str, age: int):         self.name = name         self.age = age          def __repr__(self):         return f""Person(name='{self.name}', age={self.age})""          def __eq__(self, other):         return self.name == other.name and self.age == other.age"
+"@dataclass 自动生成__init__()	__repr__()__eq__()	这三个方法，分别作用是什么？"	"__init__()	初始化方法，根据字段自动生成 __repr__()	打印对象时的格式 __eq__()	比较两个对象是否相等"
+什么时候使用 @dataclass？	"主要用于存储数据的类	✅ 推荐使用 配置类	✅ 推荐使用 需要继承并覆盖默认值	✅ 必须使用"
+为什么子类要加 @dataclass？	确保子类的默认值能正确覆盖父类
+mcp里面Tool 执行结果作为 什么添加到对话历史	Observation
+get_observation 的核心代码是什么样的 ？	"def get_observation(self, response: dict) -> dict:     # 1. 执行命令（可能是 MCP 或 bash）     output = self.execute_action(self.parse_action(response))          # 2. 把执行结果渲染成 observation 文本     observation = self.render_template(self.config.action_observation_template, output=output)          # 3. 作为 ""user"" 消息添加到对话历史     self.add_message(""user"", observation)          return output"
+"下面是构造的5步骤的messages ，每个步骤是构造了什么？ messages = [     {""role"": ""system"", ""content"": ""...""},     {""role"": ""user"", ""content"": ""Task: ...""},     {""role"": ""assistant"", ""content"": ""@amd:query ...""},     {""role"": ""user"", ""content"": ""Found 10 results...""},                {""role"": ""assistant"", ""content"": ""```bash```""}    ]"	Step 1: 添加系统提示  Step 2: 添加用户任务  Step 3: LLM 回复（生成 MCP 命令）  Step 4: 执行命令，结果作为 observation 添加 ⭐  Step 5: LLM 基于 observation 继续回复
+LLM 对话只有三种角色：分别是啥？以及作用是什么？	"system	系统指令，定义 AI 行为 assistant	AI 的回复 user	用户的输入"
+mini-swe-agent里面为什么Tool 执行结不能是 assistant角色，而应该是什么角色？	因为不是 AI 说的，所以不能是 assistant角色，而应该是user角色
+mini-swe-agent里面为什么Tool 执行结果是 user角色？	"在 Agent 框架中，把执行结果当作 ""用户反馈"" 是常见做法： 用户说：""执行你的命令后，结果是...""这就是 observation"
+mini-swe-agent里面observation 是什么？	Tool/命令执行后的结果
+为什么observation是 user 角色？	"不是 AI 说的话，视为""用户反馈"""
+observation LLM 能看到吗？以及为什么？	✅ 能，下次调用时会包含在 messages 中
+mini-swe-agent里面的observation 作用是什么？	让 LLM 知道命令执行的结果，据此继续推理
+COMPLETE_TASK_xxx 这个内容触发 具体哪个异常，终止 Agent 循环	触发 Submitted 异常，终止 Agent 循环
+mini-swe-agent里面，COMPLETE_TASK_xxx 后面返回的内容是什么？	后面的部分是最终输出
+COMPLETE_TASK_xxx 既作为结束信号又作为分隔符，这个如何理解？	结束信号，是因为他会触发submitted异常来终止循环， 分隔符，是因为后面的部分是最终输出。
+Observation 就是 User message 吗？	准确来说，Observation 是以 User message 的形式添加到对话中的
+User message 和 Observation 细节区别是什么？	"User message	LLM 对话中的角色类型（role: ""user""）， Observation	Agent 执行动作后观察到的环境反馈。"
+Observation 和 User message的区别是什么？	Observation 是一种特殊的 User message，不是真正的用户输入，而是环境/工具的执行结果。
+"messages = [     {""role"": ""system"", ""content"": ""...""},     {""role"": ""user"", ""content"": ""...""},              {""role"": ""assistant"", ""content"": ""@amd:query ...""},     {""role"": ""user"", ""content"": "" ...""},   ] messages 里面 第一个user和第二个user的信息分别是什么意思？"	第一个user的信息是真正的用户输入， 第二个user的信息不是用户输入，是环境反馈。
+Agent-Environment 循环 是什么样的？	Agent ──────Action────────→ Environment                     ↑                              │                             └────────Observation←──────────┘
+ReAct (Reasoning + Acting) 框架，这是 2022 年 Google 提出的：流程是什么样的？	Thought → Action → Observation → Thought → Action → Observation → ...   ↑          ↑          ↑  思考       行动       观察
+为什么叫 Observation？	"来自强化学习术语，表示 Agent 执行动作后""观察""到的结果"
+除了Observation，还有其他叫法吗？	"有的框架叫 ""tool result""、""execution result""、""feedback"""
+User message 范围是否包括 observation	是的
+所有 LLM 都支持  三种角色,分别是什么？	user/assistant/system
+Observation 是什么的结果？	= LLM 返回的命令【被执行后】的结果
+"""observation 是 LLM 返回的内容""	这个表述正确吗？"	不是的， observation 是 LLM 返回的命令被执行后，环境返回的内容
+什么是 tool_use？	tool_use 是 LLM 自己决定是否调用工具 的能力，而不是代码强制的。
+"tool_use/function calling	谁决定调用？实现方式是什么样的？"	"LLM 自己判断是否需要	，LLM 被训练成""看到某些问题时自动调用工具"""
+llm的工具何时调用以及调用哪个是用户决定的吗？	不是用户决定的，是 LLM 根据问题自己判断的。
+mini-swe-agent 需要安装的原因是什么？	安装后可以使用 mini 命令（CLI）。
+mini-swe-agent 安装之后，为什么可以使用 mini 命令（CLI）。	"因为 pyproject.toml 定义了入口点：  [project.scripts] mini = ""minisweagent.run.mini:app"""
+pip install -e . 这种安装方式，是否会把代码复制到 site-packages	不会
+"pip install . 和 pip install -e .	之间的区别是什么？"	"pip install .	复制到 site-packages，克隆位置无所谓， pip install -e .	创建链接指向源码目录，不能随便移动。"
+tool_use 是什么？	LLM 自主判断是否需要调用工具的能力
+为什么 LLM 决定是否调用以及何时调用tool？	LLM 被训练成理解问题并自动调用工具
+pip install . (普通)和pip install -e . (可编辑)这两种方式的核心区别是什么？	"pip install . (普通)	复制代码到 site-packages/，	  pip install -e . (可编辑)	创建链接指向源代码。"
+Python 如何找到包？	Python 启动时会读取 sys.path，这个列表决定了 import 时搜索的路径
+从Python 启动  到 成功 import mini-swe-agent，这个流程是什么样的？	Python 启动 → 读取 site-packages/easy-install.pth将 .pth 文件中的路径添加到 sys.pathimport 时，Python 按 sys.path 顺序查找找到 /home/puyuyang/projects/work/mini-swe-agent/src/minisweagent/成功 import！
+"为什么pip install -e . 叫 ""editable""（可编辑）？"	"因为安装后： 不是把代码复制到 site-packages 而是创建一个""链接""指向原始源代码"
+只要执行 pip install -e .，为什么 amd-ai-devtool 可以克隆在任意位置？	"创建一个""链接""指向原始源代码，Python 就能在任何地方 import 它。"
+environment方案结合mcp，流程是，每次都是立马先走MCP，然后再走大模型调用，是这样吗？	大模型是先被调用的，只是你的 prompt 强制它必须先输出 tool 命令。然后再执行 tool 命令
+Environment 方案 和 传统 MCP Client 方案 针对mcp查询的区别是什么？	"你的 Environment 方案	可以人为强制每次回答前都必须走 MCP 查询， 传统 MCP Client 方案	模型自主决定是否调用 MCP，无法保证每次都走。"
+为什么 mini 可以在任意位置运行？	"pip install -e . 执行之后，在 <python_env>/bin/ 创建可执行文件，mini ， mini-swe-agent 等等，<python_env>/bin/ 在系统 PATH 中, 任意位置都可以直接输入 ""mini"""
+mini 是 CLI 命令吗？以及为什么?	"CLI = Command Line Interface（命令行接口） mini 是通过 pyproject.toml 中的 [project.scripts] 注册的 CLI 命令：  [project.scripts] mini = ""minisweagent.run.mini:app"""
+mini-swe-agent里面新加入了--mcp参数，是 可以和其他参数搭配使用吗？以及为什么？	可以的，因为 typer（用于构建 CLI 的库）的参数是独立的：每个参数都是独立开关，互不干扰。
+mini 命令里面，这几个参数的全称是什么以及什么作用？ ├── -t   ├── -y   ├── -c   └── -o	├── -t / --task    ← 可组合：直接传任务 ├── -y / --yolo    ← 可组合：免确认模式 ├── -c / --config  ← 可组合：配置文件 └── -o / --output  ← 可组合：输出文件
+mini-swe-agent里面，mini    ，mini -v   这两种启动命令分别会启动哪个agent？	mini          → InteractiveAgent（默认） mini -v       → TextualAgent（视觉界面）
+mini-swe-agent里面，mini 和 mini -v 分别的交互效果是什么样的？	mini（InteractiveAgent） 简单的命令行交互：      mini -v（TextualAgent）  漂亮的 TUI 界面：
+mini-swe-agent里面-d 参数（Debug）作用是什么？	显示详细调试信息（每个阶段的输入输出）
+mini --mcp -d 这两个参数，他们的本质是什么？	"不同的条件分支以及不同的导入import      if mcp:         if debug:             # 使用 DebugAgent + DebugMCPEnvironment             env = DebugMCPEnvironment(...)             # ... 使用 debug 版本的 agent         else:             # 使用普通 MCP agent             env = MCPEnabledEnvironment(...)"
+"mini --mcp -d -t ""帮我查询 HIP programming"" -c /path/to/custom.yaml 使用上面这个指令来启动的时候，代码的逻辑顺序是什么样的？"	执行顺序： 1. 读取 -c 指定的配置文件 2. 检查 -t，决定是否交互式输入任务 3. 如果 --mcp，设置 MCP 环境     ├── 如果 -d，使用 DebugMCPEnvironment     └── 否则，使用 MCPEnabledEnvironment 4. 创建 agent，运行 task
+--mcp、-d、-t、-c 这四个参数分别的作用是什么？	"-c	配置加载	决定从哪里读取 yaml 配置, -t	任务输入	决定任务内容（跳过交互式输入）, --mcp	环境选择	决定用 MCP 还是普通环境, -d	调试开关	决定是否打印详细日志."
+mini-swe-agent里面，启动指令里面如果没有 -t 这个参数，那么会是什么效果？	跳过交互式输入）
+mini 这个指令来启动mini-swe-agent的时候，是否添加 -y 参数的不同的效果是什么？	不加 -y（confirm 模式）也就是每次都要按回车： LLM 输出命令 → 等待你按回车确认 → 执行 → 下一步   加上 -y（yolo 模式）每个步骤step都是自动执行，直到整个任务完成： LLM 输出命令 → 直接执行 → 下一步
+mini-swe-agent里面的多轮调用的来源是什么？	Agent 循环 + Prompt Workflow
+mini-swe-agent里面的多轮调用的来源：代码层面的Agent 循环 是具体什么样的？	while True 无限循环，直到触发 TerminatingException（即检测到 COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT）。
+mini-swe-agent里面的多轮调用的来源有两种，分为代码层面和指导层面，分别是什么意思？	Agent 的核心循环（代码层面），具体是：while True 无限循环，直到触发 TerminatingException（即检测到 COMPLETE_TASK_xxx， Prompt 中的 Workflow（指导层面）,具体是：提示词里面第一到第五步。
+mini-swe-agent是如何退出 while True 的agent 核心循环?	触发 Submitted 异常
