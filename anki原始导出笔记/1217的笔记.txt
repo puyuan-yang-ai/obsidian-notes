@@ -1,0 +1,48 @@
+#separator:tab
+#html:false
+在 Agent 领域，通过异常控制流程的设计模式是什么样的？	"Prompt 规定输出特殊字符，LLM 输出，代码检测去匹配到这个标记，触发这个exception, 退出这个循环。 Prompt 规定: ""输出 COMPLETE_TASK_XXX 结束任务""                     │                     ▼ LLM 输出: echo ""COMPLETE_TASK_XXX ...""                     │                     ▼ 代码检测: has_finished() 方法匹配到这个标记                     │                     ▼ 触发: raise Submitted(...)  ← TerminatingException 的子类                     │                     ▼ 捕获: except TerminatingException → 退出 while True 循环"
+原始的这个mini-swe-agent的workflow是分为哪6个步骤？	1. Analyze the codebase by finding and reading relevant files   ← 需要多次 ls, find, cat 2. Create a script to reproduce the issue                        ← 需要写脚本 3. Edit the source code to resolve the issue                     ← 需要编辑文件 4. Verify your fix works by running your script again            ← 需要运行验证 5. Test edge cases to ensure your fix is robust                  ← 需要测试边缘情况 6. Submit your changes                                           ← 最后提交
+什么 决定了 LLM 的行为模式	Prompt 里的 Workflow
+导致了执行步数的巨大差异的原因是什么呢？	不同的 Workflow 设计
+为什么现在mini-swe-agent的工作流里面，第一步是调用 MCP（必须）   ?	获取优化方向、最佳实践、硬件限制
+ai-devtool mcp server里面的下面这三个指令，分别的作用是什么？ @amd:query  @amd:example  @amd:optimize	"@amd:query	{""topic"": ""...""}	搜索主题 @amd:example	{""category"": ""..."", ""use_case"": ""...""}	获取类别示例 @amd:optimize	{""code_type"": ""..."", ""context"": ""...""}	根据类型和上下文描述给建议"
+ai-devtool mcp server里面的@amd:optimize  这个工具是否可以传入代码，针对代码进行具体的性能优化的分析？	不能，只能传描述。
+ai-devtool mcp server里面不支持把代码发给 MCP 获取进一步建议，这时候怎么办？	"gent 把代码优化后的问题描述发给 MCP：比如下面这样  @amd:troubleshoot {   ""error_message"": ""使用了 shared memory 进行 tiling，但性能只提升了 10%，预期应该更高"" }"
+在 Agent/ML 领域，instance 的意思是 例子的意思吗？	"是""一个具体的案例/任务""，而不是""例子""："
+在 Agent 设计中：system_template 和 instance_template 之间的联系是什么？	"你可能运行多个不同的任务，但使用同一个 system prompt【system_template 】， 每个任务是一个 ""instance""（实例）， instance_template 是针对每个具体任务实例的提示词。"
+instance_template 可以被理解成哪个名字？	"可以理解为 ""task_template""（任务模板）。"
+sed 编辑是什么？	sed = Stream EDitor（流编辑器） sed 是 Unix/Linux 下的命令行文本编辑工具，用于在不打开文件的情况下修改文本。
+mini-swe-agent里面为什么 workflow 里用 sed？	Agent 不能打开 vim/nano 这类交互式编辑器（没有人按键），所以用 sed 命令编程式地修改文件。
+为什么 mini.yaml 里要教 Agent 用 sed？	因为 Agent 需要自动化修改代码，而 sed 是最适合命令行操作的方式：   ✅ 不需要交互 ✅ 一行命令完成 ✅ 可以精确控制修改位置
+sed 是什么？	命令行文本编辑器，用于自动化修改文件
+mini-swe-agent里面为什么用 sed？	Agent 不能用交互式编辑器，需要命令行方式编辑
+Agent 的循环逻辑，从llm输出开始，后续是什么？	LLM 输出 → 解析出 bash 代码块 执行代码块中的命令 把命令输出作为 observation 返回给 LLM 重复
+mini-swe-agent里面跳出循环的时候，为什么不适用return而是用 Exception？	用 return 需要层层返回，用 raise Exception 可以直接跳出所有层级。
+mini-swe-agent里面，输出结果的时候，为什么 LLM 不能直接输出文本，而是放到了```bash 里面？	"因为 Agent 的架构只处理 ```bash``` 代码块的执行结果  , LLM 写的""普通文本""会被忽略"
+Agent 的架构只处理 ```bash``` 代码块的执行结果 ,所以llm输出的文本是如何被处理的？	"用 echo 命令输出文本 → 文本变成""命令输出"" → Agent 可以处理"
+"mini-swe-agent如何区分""中间输出""和""最终输出""？"	用 COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT 作为标记, 第一行是标记 → 后面的内容是最终答案
+mini-swe-agent为什么不能直接输出文本？	Agent 只处理命令执行结果，忽略普通文本
+mini-swe-agent为什么用 echo？	"把输出的文本信息""包装""成命令输出"
+mini-swe-agent里面COMPLETE_TASK... 后面的内容是什么？	是的，作为最终输出返回给用户
+mini-swe-agent为什么用 Exception？	方便跳出嵌套循环 + 区分不同退出类型
+LLM 的输出格式固定是什么样的？	┌─────────────────────────────────────┐ │ THOUGHT: 我的思考过程...             │  ← 文本（被忽略，只是给人看的） │                                     │ │ ```bash                             │ │ actual_command_here                 │  ← 命令（会被执行） │ ```                                 │
+如果 LLM 想**告诉用户最终答案**，它不能直接pinrt答案，而应该怎么做？	"它必须通过**命令输出**来传递信息：类似下面的方式   ```bash echo ""答案是 xxx""  ← 这个命令的输出会被处理"
+为什么用 COMPLETE_TASK_XXX，是什么目的？	"两个目的 标记结束：告诉 Agent ""任务完成了，不要再循环了"" 传递结果：标记后面的内容是最终输出"
+用 COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT 作为标记 ，第一行和后面内容分别是什么？	第一行是标记 → 后面的内容是最终答案
+"LLM 输出的内容有两个部分，1 是 ```bash 代码块里的内容，2 是代码块外的普通文本，	Agent 的处理分别是什么样的？"	"```bash 代码块里的内容	✅ 被执行， 代码块外的普通文本	❌ 被忽略（不是被执行，是直接丢弃）。"
+mini-swe-agent里为什么代码块外的普通文本被完全忽略？	只有 \``bash和```` 之间的内容会被提取和执行，其他文本全部丢弃。
+mini-swe-agent的输出里面，代码块外的普通的文本会被忽略，意思是用户看不到吗？	"不是的，用户可以看到普通文本 在交互过程中，LLM 输出的所有内容（包括普通文本）都会打印到终端， ""忽略""是指 Agent 的程序逻辑不处理普通文本，不是指用户看不到。"
+"这种情况下，用户看到的和程序返回的分别是什么样的？ ┌────────────────────────────────────────────────────────────┐ │ LLM 输出：                                                  │ │ ""任务完成，答案是 42""                                        │ │ ```bash                                                    │ │ echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT                 │ │ ```"	"│ 用户看到：✅ 可以在终端看到 ""任务完成，答案是 42"" 以及这个bash代码块            │ │ 程序返回：❌ 只返回空字符串（因为 echo 后面没有内容）"
+mini-swe-agent里面，模型生成的普通文本，如果没有通过Echo，那么用户看不到是吧？	"不是的，模型生成的普通文本，即使用户没用 echo，用户也能在终端直接看到！ 因为console.print(content)  # ← 这一行把所有普通文本都打印给用户看了！"
+"mini-swe-agent里面的echo 是为了""让用户看到吗？"	不是的， 普通文本 = 给用户看的（人能看到） echo 命令 = 给程序看的（触发结束信号
+"mini-swe-agent 的""执行逻辑""忽略了bash代码块之外的普通文本，而不是说""显示逻辑""忽略了它。这如何理解呢？"	世界 A：给用户看的（显示逻辑）世界 B：给程序跑的（执行逻辑）目的：让用户知道发生了什么目的：执行命令、驱动循环包含：LLM 说的所有话（文本+代码）只包含： ```bash 里的代码行为：打印到屏幕行为：提取 → 执行 → 返回结果
+"mini-swe-agent里面，llm返回的是下面这样，那么程序拿到的是什么？ echo ""COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT 最终答案是 42"""	最终答案是 42
+mini-swe-agent完成任务后的最终的输出的结果必须是什么样的？	必须被 ```bash 包裹：这样 Agent 才能提取并执行。必须包含 COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT：这样 Agent 才知道任务结束了。必须是第一行：代码逻辑规定这个标记必须在输出的第一行。
+"让LLM 生成类似这样的查询指令: @amd:query {""topic"": ""xxx""}，前提是什么？"	必须告诉 LLM 有哪些工具可用，以及怎么用。  必须引导 LLM 从用户模糊的需求中提取精确参数。 也就是需要： Tool Definition（菜单）：告诉它有哪些工具。Intent Recognition（意图识别）：让它选择合适的工具。Slot Filling（槽位填充）：让它从用户话语里提取参数（关键词）。
+当我使用mini --mcp -d的时候，是否会走@run_agent.py 这个文件里面的相关的逻辑以及为什么	"是的，但只走了一半。"" 使用 mini --mcp -d 时，你的程序确实会“借用” run_agent.py 里的代码，但并不会运行整个文件。 敲下 mini 命令时，真正的入口其实是 src/minisweagent/run/mini.py，也就是 入口：并不是 run_agent.py"
+"mini (普通模式)	mini --mcp (MCP模式) 分别的环境类是什么？"	方面mini (普通模式)mini --mcp (MCP模式)环境类LocalEnvironmentMCPEnabledEnvironment
+"mini (普通模式)	mini --mcp (MCP模式) 分别的命令执行 是什么？"	方面mini (普通模式)mini --mcp (MCP模式)  命令执行仅执行 bash 命令bash 命令 + @amd:xxx MCP 工具调用
+"mini (普通模式)	mini --mcp (MCP模式) 分别的模板的来源是什么？"	方面mini (普通模式)mini --mcp (MCP模式)  模板来源mini.yaml 配置文件mcp_integration/prompts.py 模块
+Agent 框架的经典设计模式里面循环机制和终止方式分别是什么？	"循环机制:while True	 终止方式：特定的输出的检测，比如“FINISH_XXX”"
+"mini.yaml 中可以直接修改 mode 配置，其中有confirm	以及yolo	这两个值，分别是什么意思？"	"confirm	默认模式，Agent 每次执行命令前需要用户确认， yolo	自动执行所有命令，不需要确认。"
+mini-swe-agent想要修改成自动执行所有命令，不需要按回车确认。需要去哪里修改？	mini.yaml里面的mode: confirm 改成 mode: yolo
