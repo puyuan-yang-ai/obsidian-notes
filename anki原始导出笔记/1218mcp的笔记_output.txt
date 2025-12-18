@@ -1,0 +1,80 @@
+Agent里面，Observation的作用有哪三点？ | 判断任务是否完成、决定下一步行动、触发结束信号。
+mini swe agent里面最终输出的标记机制的提示词约束是什么？ | 标记必须满足：1. 被````bash代码块包裹 2. 包含COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT标记 3. 标记位于输出内容第一行。示例格式：```bash echo ""COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT 最终答案是 42"""
+Agent的核心结构就是一个while再加一个raise，这如何理解？ | While循环是无限循环，raise利用异常来控制整个循环的结束。
+所有agent结构都是while循环加raise结束循环，那么他们核心不同点是什么？为什么？ | 核心不同点在于提示词里的workflow，因为它控制agent的整个行为模式。workflow不同，执行同样任务时，有的执行三步结束，有的需要十五步。
+Agent里面的Workflow主要放什么内容？ | 标有数字序号的一个个明确的步骤。
+@amd:query @amd:example @amd:optimize @amd:compat @amd:troubleshoot @amd:docs这几个工具分别的使用场景是什么？ | @amd:query - 通用优化方向；@amd:example - 获取代码示例；@amd:optimize - 针对特定代码优化；@amd:compat - 兼容性问题；@amd:troubleshoot - 错误调试；@amd:docs - 文档链接。
+代码中明明使用raise Submitted("xxx")方式抛出异常，为什么全局搜索找不到except Submitted:来捕捉这个异常？ | 因为捕获的是父类TerminatingException，而不是直接捕获Submitted。Submitted的父类是TerminatingException，在run()中捕获的是父类。异常层次：Exception → TerminatingException（被捕获）→ Submitted（抛出的子类）。
+mini-swe-agent里面为什么搜不到except Submitted: | 因为主要通过捕获父类TerminatingException来处理。
+mini-swe-agent里面Submitted在哪被捕获 | 在default.py:84的except TerminatingException as e:处被捕获。
+Python异常的多态特性，为什么捕获父类而不是捕获子类？ | 因为捕获父类可以捕获所有子类的异常！
+raise Submitted("最后的结果是xxx")执行后，在except TerminatingException as e:这里被捕获，这里的e是什么？如何得到"Submitted"和"最后的结果是xxx"？ | e就是Submitted("最后的结果是xxx")这个对象。type(e).__name__获取类名"Submitted"，str(e)获取消息"最后的结果是xxx"。
+e = Submitted("最后的结果是xxx")中，type(e)和type(e).__name__分别指什么？ | type(e)返回<class 'minisweagent.agents.default.Submitted'>类对象，type(e).__name__返回"Submitted"类名字符串。
+e = Submitted("最后的结果是xxx")中，str(e)返回什么？ | 返回"最后的结果是xxx"。
+str(e)的本质是什么？ | str(e)实际调用异常的__str__()方法，返回所有参数的元组。例如：str(Submitted("hello"))→"hello"；str(Submitted("a","b","c"))→"('a','b','c')"；str(Submitted())→""。
+GPU kernel优化与什么息息相关？ | 硬件架构。
+Kernel优化与硬件相关吗？ | 是的，密切相关。
+硬件架构决定优化方向吗？ | 是的，架构参数直接影响最佳实践。
+在kernel优化里面，MCP的价值在哪？ | 提供硬件特定的优化建议，而不是通用猜测。
+为什么在kernel优化里面MCP模式会比纯LLM知识略好？ | 因为MCP模式先查询硬件信息+获取针对性优化建议，能获取到当前硬件的具体参数和最佳实践。
+Kernel优化分为哪两种？ | 1.通用优化（所有GPU都适用）；2.硬件特定优化。
+mini-swe-agent里面利用MCP进行前置查询的流程是怎样的？ | Step 1：获取硬件信息（rocm-smi/rocminfo）；Step 2：用硬件信息查询MCP知识库；Step 3+：基于查询结果给出具体优化建议和方向。
+kernel优化中，不同硬件信息决定不同优化方向，这个类比是什么？ | 就像给不同的车优化驾驶方式。假设要从A到B最快到达：跑车（法拉利）-加速快、转弯灵活、油箱小→激进加速、频繁超车、多次加油；卡车（重型货车）-加速慢、转弯笨重、油箱大→平稳加速、减少变道、一次加油跑全程；电动车（特斯拉）-扭矩大、需要充电、有能量回收→利用加速优势、规划充电站、多用刹车回收。相同目标，不同车需要不同策略！
+对于大多数优化任务，需要记住哪4大类的优化方向？ | 1.内存：数据搬运够快吗？（带宽利用率）；2.计算：运算够快吗？（FLOPS利用率）；3.并行度：GPU跑满了吗？（Occupancy）；4.控制流：线程步调一致吗？（Divergence）。
+对于大多数GPU kernel优化任务，内存维度的核心问题是什么？ | 数据搬运是否够快。
+对于大多数GPU kernel优化任务，计算维度的核心问题是什么？ | 运算是否够快。
+对于大多数GPU kernel优化任务，并行度维度的核心问题是什么？ | GPU是否跑满了。
+对于大多数GPU kernel优化任务，控制流维度的核心问题是什么？ | 线程步调是否一致。
+mini-swe-agent生成的日志默认放在哪里？ | ~/.config/mini-swe-agent/last_mini_run.traj.json。
+MCP调用次数统计：共3次，分别是什么指令？在什么阶段调用？解决了什么问题？ | 第1次：@amd:query{"topic":"MI300X xxx"}，在获取硬件信息后调用，解决获取MI300X/gfx942硬件vector add kernel优化方向；第2次：@amd:example{"category":"hip","use_case":"vector add optimization gfx942"}，在获取优化策略后调用，解决获取具体优化代码模式和示例；第3次：@amd:optimize{"code_type":"HIP vector add kernel","context":"MI300X gfx942,memory-bound kernel"}，在准备编写代码前调用，解决获取针对"memory-bound kernel+float4"的具体优化建议。
+LLM的"自主决策"本质是什么？ | LLM根据提示词中的指导+当前上下文，生成下一步的action。
+MCPEnabledEnvironment.execute()在执行过程中是如何实现不同路由的？ | 通过判断命令是否以"@amd:"开头来路由：以"@amd:"开头→路由到MCP Server执行；否则→路由到bash执行。
+Agent自主决策调用MCP，"自主"的本质是什么？ | LLM根据提示词指导结合当前上下文（任务进度、已有信息）推理出"下一步需要什么"，输出相应命令。
+ai-devtool MCP是否可以接收代码并分析性能瓶颈？ | 不可以。MCP不接收代码。
+结合了ai-devtool mcp server和mini-swe-agent，优化代码是谁写的？ | LLM（Claude）自己写的。
+是否需要向MCP里面加入新功能，类似输入代码返回优化建议？ | 不需要。现状：MCP=知识库查询。MCP提供了"锚点"和修改方向已足够。MCP提供：通用优化知识+代码模板；LLM负责：理解代码+应用优化；结果：1.7x-1.9x加速比。
+ai-devtool mcp server是否需要加入代码分析器功能（输入代码输出具体优化建议）？ | 不需要，因为LLM本身就是代码分析器，mcp只需返回优化知识。
+ai-devtool mcp server和mini-swe-agent各自的职责是什么？ | MCP=外部知识补充（硬件特性、API文档、代码模板）；LLM=推理引擎（代码理解、优化应用、代码生成）。职责分离，架构清晰。
+ai-devtool MCP的价值是什么？ | 提供LLM不知道的硬件特定信息；提供可直接参考的代码模板；减少LLM的"幻觉"，让建议更靠谱。
+mini-swe-agent的解耦架构是什么样的？ | 三层解耦架构：Protocol层（__init__.py）定义接口（Model/Environment/Agent）；具体实现层包括Model（AnthropicModel/AmdLlmModel/OpenAIModel等）、Environment（LocalEnvironment/MCPEnabledEnvironment/DebugMCP等）、Agent（DefaultAgent/InteractiveAgent/TextualAgent等）；各组件可独立扩展。
+mini-swe-agent的架构设计中，Agent的可替换性是怎样的？ | 任何实现了run()方法并拥有model、env、messages、config属性的类，都可以作为Agent。
+mini-swe-agent里面agent类的继承链是什么样的？ | DefaultAgent → InteractiveAgent → TextualAgent。
+mini-swe-agent里面默认使用哪个agent？如果指定-jv参数会切换到哪个agent？ | 默认使用InteractiveAgent；如果指定-v参数，切换到TextualAgent。
+mini-swe-agent里面如何使用自定义的agent？ | 通过继承实现：继承DefaultAgent（最灵活）或继承InteractiveAgent（保留交互功能）。在mini.py中切换，或者更优雅的方式是添加--agent参数来选择不同Agent实现。
+Protocol是什么？ | Protocol是Python标准库的一部分，来自typing模块。
+导入Protocol的语句是什么？ | from typing import Protocol # ← 标准库，不是自定义的。
+Protocol的本质是什么？ | Protocol是Python对"鸭子类型"的形式化支持。
+鸭子类型是什么意思？ | 如果它走起来像鸭子，叫起来像鸭子，那它就是鸭子。
+鸭子类型是什么？ | 如果它走起来像鸭子，叫起来像鸭子，那它就是鸭子。翻译成代码：如果一个对象有quack()方法，那它就可以被当作"鸭子"使用。
+Protocol是自定义的吗？ | 不是，是Python标准库typing.Protocol。
+为什么用Protocol？ | 定义"契约"，只要有对应方法就能用，不需要继承。
+Protocol的核心价值是什么？ | 通过依赖注入来解耦 - 换实现不需要改代码。
+Protocol、具体实现、依赖注入、Agent的类比分别是什么？ | Protocol（接口）→ USB接口标准；具体实现→各种USB设备（鼠标、键盘、U盘）；依赖注入→把USB设备插入电脑；Agent→电脑（只关心设备符合USB标准，不关心具体是什么）。
+class Printer(Protocol)：Protocol本身是用来继承的吗？ | 不是的，只是"描述"一个接口长什么样。
+定义Protocol：class Printer(Protocol)说明"能打印的东西要有print_content方法"，FilePrinter这个类是否需要继承？如何构造？ | FilePrinter不需要继承任何东西。class FilePrinter: # ← 注意：没有(Printer)，然后实现print_content方法即可。
+函数do_print(printer: Printer, content: str)接受Printer类型，调用do_print(FilePrinter(), "Hello")，这里要求Printer却传入FilePrinter，可以用吗？为什么？ | 可以使用。因为Printer是Protocol，里面有print_content方法，而FilePrinter也有print_content方法，所以被认为是兼容的。Python检查的是：FilePrinter有没有print_content()方法？有→符合Printer Protocol，可以用；没有→不符合，类型检查报错。
+要兼容第三方类，为什么用Protocol而不是抽象类？第三方类"碰巧有方法"就能用？ | 因为第三方类（如标准库的io.StringIO）没法让它们继承你的抽象类，但它们"碰巧"都有需要的方法。用Protocol就能直接用，传统抽象类做不到这一点。
+依赖注入的理解是什么？ | 类的成员不需要新建对象，而是通过构造方法从外面接受新建好的对象，并且构造函数的参数是抽象的而非具体的。
+依赖注入里面的"依赖"是什么？ | "依赖"是一个类需要另一个对象才能正常工作，这个对象就是依赖。
+依赖注入里面的"注入"是什么？ | 注入是把依赖的对象从外部"注射"进去，而不是内部自己创建。
+对于依赖注入，不注入和注入分别是什么意思？ | 不注入：依赖在内部创建；注入：依赖从外部传入。
+依赖和注入合起来的含义是什么？ | 依赖注入=把类所依赖的对象，从外部注射进去。
+"依赖"和"注入"分别是什么？ | "依赖"是class A需要obj B才能工作；"注入"是把obj B从外部传给class A，而不是class A自己内部创建。
+ABC（抽象基类）和Protocol的继承要求分别是什么？ | ABC（抽象基类）必须显式继承；Protocol不需要继承。
+class Printer(Protocol)和class FilePrinter的说法分别是什么？ | class Printer(Protocol)=定义一个Protocol（接口规范）；class FilePrinter=符合/实现这个Protocol（要写具体内容）。
+class Printer(Protocol)用"一个类继承了Protocol"来表述合适吗？ | 不合适，这是【定义】Protocol。
+"一个类继承了Protocol"的修正说法是什么？ | 一个类定义为Protocol（class X(Protocol)）。
+一个类定义为Protocol，它的作用是什么？ | 作为函数的形参、作为类型提示。
+函数的形参是Protocol，什么样的实参可以传入？ | 任何具有所有要求方法的对象都能传入。
+Protocol类里面需要写内容吗？ | 这是接口定义，方法用...不写内容。
+依赖注入里面的依赖指什么？ | "依赖"是一个类需要另一个对象才能正常工作。
+class Printer(Protocol)这样写，Printer被称作什么？ | Protocol类最准确，或者规范类（表达"规范/契约"）。
+形参是Protocol，实参是对象A（方法更多），能传入吗？ | 可以的。Protocol只要求"至少有这些方法"，多了没关系。
+形参是Protocol，实参是对象B（方法不全），能传入吗？ | 可以传入。静态检查（IDE/mypy）会警告，但不影响运行；运行时不会立即报错，只有实际调用缺失的方法时才报错。
+Protocol只是强约束吗？为什么？ | 不是。Protocol是类型提示，不是强制约束。行为：静态检查（IDE/mypy）会警告类型不匹配；运行时传参不检查不报错；运行时调用缺失方法时才报AttributeError。
+形参是Protocol，实参有三种情况：ObjectA（全有+额外）、ObjectB（缺一个）、ObjectC（全缺），在IDE检查、传参时、调用时的结果分别是什么？ | ObjectA（全有+额外）：IDE检查✅、传参时✅、调用时✅；ObjectB（缺一个）：IDE检查⚠️警告、传参时✅不报错、调用时❌调用缺的才报错；ObjectC（全缺）：IDE检查⚠️警告、传参时✅不报错、调用时❌调用时报错。
+既然不强制约束，Protocol有什么用？有vs没有Protocol有什么区别？ | 没有Protocol：IDE提示无、写代码时发现错误不能、代码可读性差；有Protocol：IDE提示有、写代码时能发现错误、代码可读性好。
+既然不强制约束，Protocol有什么用？ | Protocol是给人和工具IDE看的，不是给Python解释器看的。它把"运行时才发现的错误"提前到写代码时。
+函数形参是Protocol，对实参有具体要求吗？什么时候会报错？ | 没有具体要求，都可以传入。Python只有在实际调用缺失的方法时才会报错。如果函数里根本没用到Protocol规定的方法，传什么对象都能跑。
+函数形参是Protocol，传入的实参不包含Protocol里面的方法，会有什么后果？为什么？ | 顶多是IDE报警告，但不影响运行。因为Protocol=类型提示=给人和工具IDE看的，而不是给Python解释器看的。IDE看到会警告但不阻止运行，Python解释器完全忽略照常执行。
+Protocol的本质是什么？ | 它是静态检查的工具，不是运行时约束。IDE警告≠运行失败。
