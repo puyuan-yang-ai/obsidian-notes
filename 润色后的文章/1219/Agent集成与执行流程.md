@@ -43,7 +43,8 @@ prompt_sections = [
 final_prompt = "\n\n".join(prompt_sections)
 ```
 
-[!tip] 这种结构化的Prompt设计确保Agent能够获得完整的任务上下文，包括目标、资源、约束和期望格式等信息。
+> [!tip] 
+> 这种结构化的Prompt设计确保Agent能够获得完整的任务上下文，包括目标、资源、约束和期望格式等信息。
 
 ### Prompt组成部分功能
 
@@ -81,7 +82,8 @@ Agent的加载过程体现了框架的高度灵活性：
 4. **函数调用** - 调用@register_agent装饰器注册的launch_agent函数
 5. **系统执行** - 通过系统PATH查找并执行对应的命令
 
-[!warning] 框架不关心Agent的具体实现位置，只要求系统能够找到对应的命令。如mini-swe-agent中的"mini"命令需要在系统PATH中可用。
+> [!warning] 
+> 框架不关心Agent的具体实现位置，只要求系统能够找到对应的命令。如mini-swe-agent中的"mini"命令需要在系统PATH中可用。
 
 ### 加载流程示例
 

@@ -25,7 +25,8 @@ agent:
   template: SWE-agent    # ← 修改这里即可切换Agent
 ```
 
-[!tip] 可插拔（Pluggable）意味着系统组件可以随时替换、切换，为用户提供灵活的配置选项。
+> [!tip] 
+> 可插拔（Pluggable）意味着系统组件可以随时替换、切换，为用户提供灵活的配置选项。
 
 ### 2. Task的可插拔性
 评测任务同样支持动态配置，用户可以轻松选择或切换不同的GPU kernel优化任务：
@@ -56,7 +57,8 @@ tasks:                     # 【Task 选择在这里改】
 target_gpu_model: MI300   # 【目标 GPU 在这里改】
 ```
 
-[!warning] 需要注意的是，AIG-Eval采用单Agent评测模式，一次只能评测一个Agent，不能同时评测多个Agent。
+> [!warning] 
+> 需要注意的是，AIG-Eval采用单Agent评测模式，一次只能评测一个Agent，不能同时评测多个Agent。
 
 ### 任务配置（tasks/xxx/config.yaml）
 每个任务都有独立的配置文件，定义具体的执行参数：
