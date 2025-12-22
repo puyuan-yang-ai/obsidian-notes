@@ -1,0 +1,89 @@
+#separator:tab
+#html:false
+刚接外包项目并倾听完客户的想法、目标和期望后，接下来要做什么？ 	 根据初步沟通结果，整理并输出详细的《项目方案建议书》。
+《项目方案建议书》应包括哪些内容？ 	 项目目标：说明项目定位和要实现的商业目标；功能清单：列出主要功能模块及简要说明；项目范围：明确项目包含与不包含的内容，避免歧义；技术方案：说明采用的技术栈及选择理由；进度计划：列出主要阶段、时间安排和里程碑；交付内容：说明最终交付的成果物；报价与付款：列出分阶段报价与付款比例。
+装修流程是：确定风格与需求 → 明确装修范围 → 选材与品牌 → 制定施工进度表（水电改造 → 木工 → 油漆 → 家具进场 → 验收）→ 交付钥匙 → 分阶段付款（30%定金 → 40%中期 → 30%验收）。那么，对应到外包项目，交付流程是什么？ 	 项目目标确定：明确项目方向和商业目标；功能与范围定义：列出要做和不做的内容，防止范围不清；技术方案选择：确定技术栈并说明选择理由；项目计划制定：拆分阶段（UI设计 → 前端 → 后端 → 测试 → 部署），设置里程碑；成果交付的形式：提交源代码、设计稿、上线产品等；报价与付款：按阶段付款，如预付30%，中期40%，验收30%。
+《项目方案建议书》确认无误后，下一步怎么做？ 	 需签署正式合同，并将最终确认的方案作为附件，明确双方的权利、义务、费用及交付日期等内容。
+项目启动后，如何进行定期沟通？ 	 建议每周或每两周召开一次简短的进度会议，汇报已完成内容，收集反馈，确保项目方向正确。
+项目交付后，后期维护通常怎么做？ 	 一般会提供1-3个月的免费质保期，用于修复Bug；若需长期支持或新增功能，应另签维护合同。
+`python code/app.py` 和 `uvicorn code.app:app --host 0.0.0.0 --port 9006` 等价吗？ 	 等价。因为 `python code/app.py` 会执行文件末尾的 `uvicorn.run(...)`，启动的就是同一个FastAPI应用，初始化逻辑完全一致。
+在 `code/app.py` 的 `uvicorn.run(...)` 里加上 `reload=True` 有什么作用？ 	 启用热重载。当代码被修改并保存后，Uvicorn会自动检测变化并重启服务，无需手动重启。
+"访问 http://127.0.0.1:9006 或 http://localhost:9006 显示 {""detail"":""Not Found""} 是什么意思？"	 说明服务已启动，但根路径 `/` 没有定义路由，因此FastAPI返回默认的404，这是正常现象。
+"访问 http://127.0.0.1:9006 或 http://localhost:9006 显示 {""detail"":""Not Found""} 后该怎么做？"	 打开 http://127.0.0.1:9006/docs（或/redoc），即可查看自动生成的Swagger接口文档。
+FastAPI自动生成的Swagger UI有什么作用？ 	 用于直接测试接口。
+Swagger UI的使用步骤是什么？ 	 填写接口参数，点击Execute按钮，Swagger会向接口发送请求并显示结果。若返回200，表示请求成功。
+"VS Code的设计理念""终端是终端，编辑器是编辑器""是什么意思？"	 终端由用户控制，可开多个、切换不同环境；编辑器的解释器独立负责运行与调试。两者默认分离，避免环境混乱与出错。
+终端提示符里的 (career_env) 和 VS Code 的 Select Interpreter 各代表什么？ 	 (career_env)：终端当前激活的环境；Select Interpreter：VS Code编辑器内部绑定的Python解释器路径。
+VS Code的Select Interpreter会改变pip的安装路径吗？为什么？ 	 不会。它只影响VS Code运行、调试和补全时使用的解释器，不会改变已激活环境中pip的安装路径。pip安装位置由终端当前环境决定。
+在 (career_env) 环境激活状态下执行 pip install，包会安装到主环境（base）吗？ 	 不会。它会安装到当前激活的 (career_env) 环境中，而不是base。
+VS Code的解释器选择会改变虚拟环境吗？ 	 不会。它只是让编辑器跟随并使用指定环境，不会真正切换或修改虚拟环境本身。
+如何查看 career_env 虚拟环境安装位置（是否在 C 盘）？ 	 输入命令：conda env list 即可看到所有环境及其对应路径。
+uvloop是什么库？能在Windows上使用吗？ 	 uvloop是一个用于Linux和macOS的高性能事件循环库，Windows上无法编译或使用。
+uvloop的作用是支持FastAPI和Flask吗？ 	 不是。uvloop只是一个高性能事件循环库，可用于提升基于asyncio的框架（如FastAPI、aiohttp）的运行效率；而Flask属于同步框架，与uvloop无关。
+virturlInterview接口的作用是什么？ 	 用于模拟面试，对求职者进行实时问答，并以流式方式返回AI面试官的回复。
+interviewReport接口的作用是什么？ 	 在面试结束后，根据对话记录、岗位信息及音视频内容，生成综合面试评估报告，并异步回调到指定URL。
+jdFillingGenerate接口的作用是什么？ 	 用于生成虚拟岗位，AI会根据用户画像和期望职位自动创建公司与岗位描述。
+/resumeBasicOptimize接口的作用是什么？ 	 用于对简历的基本信息、工作经历和项目经历进行自动润色与优化。
+/resumeDeepOptimize接口的作用是什么？ 	 用于简历深度优化，基于对话历史进行针对性改进与提升。
+jdFillingGenerate接口会生成真实岗位吗？是如何生成的？ 	 不会。它生成的是虚拟岗位，AI会根据用户画像和期望职位自动构造公司与岗位描述，但这些岗位并不真实存在。
+/resumeBasicOptimize和/resumeDeepOptimize的功能有什么区别？ 	 /resumeBasicOptimize：进行基础润色，优化简历的基本信息、工作经历和项目经历；/resumeDeepOptimize：进行深度优化，结合对话历史进行针对性改进。
+/chat和/resumeDeepOptimize这两个接口有什么异同？ 	 本质相同：都调用同一个底层函数，逻辑一致。体验不同：/chat提供流式响应，适合实时交互；/resumeDeepOptimize一次性返回，适合后台处理。
+当前项目是如何做意图分类的？ 	 利用大模型理解能力分类：预设三种意图——resume_optimize、generate_job、chat；通过提示限定只能三选一，并用JSON格式输出，从intent字段读取结果路由处理。
+"/resumeDeepOptimize的流式响应是指""逐字输出建议""吗？"	"不是。它指的是""逐模块推送结果""，例如：[模块1：基本信息优化结果]→[模块2：工作经历优化结果]→[模块3：项目经历优化结果]。"
+/resumeDeepOptimize为什么使用流式响应？ 	 因为简历优化耗时较长：每个模块（基本信息、工作经历、项目经历）都需单独调用LLM，整体可能耗时20秒以上。流式响应可分块返回结果，让用户边等边看，显著提升体验。
+/resumeDeepOptimize的流式响应是LLM逐字输出或逐字修改简历吗？ 	 都不是，而是按模块逐步推送结果。
+heartbeat的作用是什么？ 	"用于向前端发送""我还活着""的信号，防止长时间无输出时连接被断开。"
+/resumeDeepOptimize和/chat两个路由读取的请求体字段是否相同？ 	 是的，二者读取的请求体字段完全一致。
+/chat使用StreamingResponse(detect_intent(...))后，前端会依次收到哪些信息？适合什么场景？ 	 前端会依次收到：心跳（type:heartbeat）→各模块结果（type:basic/work/project）→最终结束信号（type:DONE）。适用于聊天窗口或需要逐步展示结果的场景。
+/chat和/resumeDeepOptimize这两个接口有什么异同呢？ 	 两者都用于让AI重写或润色简历。区别在于：/chat采用流式分块推送，体验更好；/resumeDeepOptimize一次性返回全部结果，适合后台调用。
+在意图分类中，传统方式和LLM方式有什么区别？ 	 传统方式：需训练专门模型（如BERT、TextCNN），并依赖大量标注数据。LLM方式：利用大模型的零样本能力，通过Prompt直接完成分类，无需额外训练。
+heartbeat、chunk与流式传输之间是什么关系？ 	"heartbeat：状态消息，表示进度或存活状态（如""正在处理""）；chunk：实际内容片段（如""根据您的简历…""）。两者都通过流式方式传输，只是类型不同。"
+FastAPI应用的入口文件是哪一个？它的作用是什么？ 	 入口文件是app.py。主要作用：加载配置、注册中间件（如CORS、限流、鉴权），并注册各个路由模块。
+中间件是什么意思？CORS、限流、鉴权各有什么作用？ 	 中间件：介于请求与响应之间的处理层，用于统一拦截和处理逻辑。CORS：允许前端跨域访问接口。限流：控制请求频率，防止接口被滥用。鉴权：验证用户身份，确保只有合法用户能访问资源。
+app.py作为FastAPI入口文件，加载哪些配置？ 	 通常加载环境变量、日志设置、数据库连接、模型路径、API密钥等运行所需的全局配置。
+middleware/目录下的auth_middleware.py和limiter.py各有什么作用？ 	 auth_middleware.py：负责Token验证，进行用户身份校验。limiter.py：负责接口限流，控制请求频率，防止滥用。
+路由层放在哪个文件夹？里面存放什么，负责什么？ 	 放在routers/文件夹中。存放各接口的定义，负责解析请求参数、调用业务逻辑并返回响应结果。
+service/文件夹属于哪一层？负责什么？ 	 属于业务逻辑层，负责实现核心算法、调用大模型并进行数据处理。
+FastAPI入口文件需要注册哪些内容？ 	 中间件（如CORS、限流、鉴权）和路由模块（routers）
+路由层通常需要导入哪个层？ 	 需要导入业务层（service层），以调用具体的业务逻辑。
+路由层的核心是定义什么？包含哪些流程？ 	 核心是定义接口。流程包括：解析请求参数→调用业务逻辑层→返回（流式）响应。
+业务逻辑层包含哪些流程？ 	 构建Prompt→调用大模型→组织结果（如按模块切分）并以流式或一次性形式返回。
+SlowAPI是第三方库吗？它的作用是什么？ 	 是的。SlowAPI是一个用于FastAPI的第三方限流库，用来控制接口请求频率，防止过载或滥用。
+一般注册的三个中间件分别是什么？ 	 CORS中间件（跨域）、限流中间件、鉴权中间件。
+路由层、业务层、工具层分别负责什么？ 	 路由层：处理HTTP请求与响应；业务层：实现核心业务逻辑；工具层：提供可复用的通用工具函数。
+auth_middleware、limiter、CORS这三个中间件分别关注什么？ 	 auth_middleware：鉴权；limiter：限流；CORS：跨域
+所有router都直接调用service吗？ 	 不是，有些router会调用sdk/层，例如chat_router.py调用intent_prompt.py。
+middleware是在router之后执行的吗？ 	 不是，在请求到达router之前，中间件会先执行鉴权、限流等检查。
+"配置层""贯穿各层""是什么意思？"	 表示各层都会通过from app.config import ai_config等方式读取配置，贯穿项目全流程。
+在Postman查看流式响应（SSE）时会看到什么输出？ 	"响应区域会显示类似以下的连续数据流：data:{""type"":""chunk"",""content"":""您好""} data:{""type"":""chunk"",""content"":""！""} data:{""type"":""chunk"",""content"":""欢迎""} ... data:{""type"":""DONE"",""content"":""[DONE]""}"
+设置Headers时，Key和Value应该是什么？ 	 Key：Content-Type Value：application/json
+为什么调用/virturlInterview接口后只返回一条内容，而不是多轮对话？ 	 因为接口设计如此：每次调用只代表面试官说一次话，并不会自动进行多轮对话。
+/virturlInterview这个HTTP接口的业务逻辑中，策略AI和执行AI分别扮演什么角色？ 	"先由""策略AI""分析对话历史并制定回复策略，再由""执行AI""流式生成面试官的回复。"
+/virturlInterview这个HTTP接口的单一职责是什么？ 	 只负责生成面试官的回复。
+/virturlInterview这个HTTP接口是否保存数据？每次依据什么生成？ 	 不保存数据，每次都根据传入的对话历史生成回复。
+既然/virturlInterview接口每次只返回一次回复，那多轮对话是如何实现的？ 	 由调用方（客户端/前端）实现：1️⃣调用接口获取面试官回复；2️⃣用户输入回答；3️⃣将双方对话追加到dialogHistory；4️⃣再次调用接口；如此循环，直到面试结束。
+白领面试（interviewType=1）和蓝领面试（interviewType=0）在AI设计与考察内容上有什么区别？ 	 白领面试：双层AI（策略+执行），使用zhixing_sys_prompt，考察硬技能、软技能和文化适配。蓝领面试：单层AI（仅执行），使用lanling_sys_prompt，考察年龄、身体状况和稳定性。
+如何自动识别面试结束？输入和输出分别是什么？ 	"通过第三个AI模型判断：输入：面试官的最新回复（ai_response）；AI分析是否包含结束意图；输出：仅两个结果——""继续""或""结束""。"
+判断面试是否结束是通过字符串匹配吗？为什么？ 	 不是，而是通过语义识别。因为结束语可能有多种表达形式，甚至涉及多语言。
+策略AI和执行AI之间是否会相互交互或回传信息？ 	 不会。两者是串行的单向关系：策略AI→执行AI→返回用户，执行AI的结果不会回传给策略AI。
+白领面试与蓝领面试中，用户每发一次消息，接口会经过哪些阶段？ 	 白领面试（interviewType=1）：策略AI→执行AI→判断AI；蓝领面试（interviewType=0）：执行AI→判断AI（无策略AI）。
+Redis是什么？有什么特点？ 	 它是一个超快的临时存储系统，特点包括：✅读写速度极快，比数据库快几十倍；✅使用简单，像字典一样操作（set、get）；✅适合存储临时数据，可随时删除；✅支持设置过期时间，自动清理数据。
+用户的一次回答会经过哪三次模型调用？ 	 依次为：1）策略层：分析问题并参考计划，做出决策；2）执行层：根据策略和计划生成回复；3）流程判断：判断流程是否结束。
+JSON格式中，即使是数字ID，通常也会用字符串表示，这是为什么呢？ 	 避免大数字精度问题
+什么时候需要使用json.dumps()？什么时候不需要？ 	 需要：当要把Python字典或列表转换成JSON字符串（如发送HTTP请求、存数据库、写入文件）。不需要：当对象已是JSON字符串，或框架会自动序列化（如FastAPI/Flask自动处理返回值）。
+Python的字典或列表通过HTTP传递时是否需要序列化？这样理解对吗？为什么？ 	 是的，需要序列化。因为HTTP传输的是字符串格式，而不是Python对象；序列化能把字典或列表转换成JSON字符串，便于网络传输和对端解析。
+Python中序列化和反序列化分别使用什么API？ 	 序列化：json.dumps()；反序列化：json.loads()
+"用户请求面试报告接口后立即返回""message"":""success""，但终端持续输出处理日志，这意味着什么？为什么这样设计？"	 意味着后台正在异步生成报告，因为AI分析耗时。这样设计是为了立即响应、提升体验，并避免用户等待导致HTTP请求超时。
+发送请求到生成面试报告接口，会经过哪些流程？ 	 1.客户端发送请求；2.FastAPI接收请求；3.数据入库（simulate_report表，content为空）；4.启动后台任务（background_task.add_task）；5.立即返回响应给客户端；6.后台任务开始执行，多次调用AI分析各维度内容；7.生成后更新数据库并将报告POST到外部URL。
+"final_report = {""overall_assessment"": {...}, ""detailed_analysis"": [...], ""competency_model_used"": {...}, ""job_match_analysis"": {...}, ""personality_analysis"": {...}, ""salary_analysis"": {...}, ""style_report"": {...}, ""user_report"": {...}} 哪些部分属于候选人报告？哪些属于HR报告？"	 user_report属于候选人报告；其余所有字段均为HR报告。
+HR报告包含哪些维度？ 	 包括：整体评估、详细分析、能力模型、岗位匹配分析、性格分析、薪资分析和风格报告。
+"final_report = {""overall_assessment"": {...}, ""detailed_analysis"": [...], ""competency_model_used"": {...}, ""job_match_analysis"": {...}, ""personality_analysis"": {...}, ""salary_analysis"": {...}, ""style_report"": {...}, ""user_report"": {...}} final_report是一次生成的吗？"	 不是。它由模型多次调用生成各个子字段后，再汇总注入到final_report中。
+深度优化分为哪两个接口，分别什么作用？ 	 /resume/deep-optimization/converse 深度简历优化对话（多轮）对话型；/resume/deep-optimization/generate 根据对话生成优化简历。
+模拟面试分为哪两个接口，分别什么作用？ 	 /virturlInterview 模拟面试对话，对话型；/interviewReport 面试报告生成（后台异步），生成型。
+app/identity.py这个文件它作用是什么呀？ 	 它的作用应该就是返回身份设定的提示词。就比如说我是慧星老师之类的，然后可以做成这样一个工具，然后注入到之后的每轮的对话的系统提示词里面。
+resume/deep-optimization/converse请求这个接口的时候，plan字段什么时候会返回以及如何使用？ 	 plan字段只会在第一次调用返回，之后每一次请求都必须携带该字段。
+resume/deep-optimization/converse请求这个接口的时候，over信号表示什么意思，以及检测到之后，前端应该如何去做？ 	 对话可以结束，对话结束信号，前端收到后可调用generate接口生成简历。
+resume/deep-optimization/converse返回的内容里面over信号和generate接口的接口是什么关系？ 	" 监听over信号→显示""生成简历""按钮。用户点击后→调用generate接口。"
+resume/deep-optimization/converse对于这个接口，首次请求和再次请求，流程上分别有什么区别？ 	 首次请求：构造首次请求→不带conversation_plan，接收响应→展示所有chunk内容，从返回中提取plan字段并保存；再次请求：后续每次请求都携带conversation_plan=plan，同时把历史对话按顺序写入history。
+流式响应（SSE）的结束标记是什么？ 	" 最后一条数据为：{""type"":""DONE"",""content"":""[DONE]""}"
+报告生成的接口是否应该返回报告本身以及为什么？ 	 不返回报告本身，只返回请求是否成功等状态信息。原因：报告生成耗时，会在接口内部启动后台异步任务生成，生成完成后再写入数据库并推送到外部配置的URL。
