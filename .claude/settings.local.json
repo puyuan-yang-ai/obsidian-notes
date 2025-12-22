@@ -1,8 +1,14 @@
 {
-  "defaultMode": "bypassPermissions",
+  "bypassPermissions": true,
   "permissions": {
     "allow": [
-      "Bash(mkdir:*)"
-    ]
+      "Write(**/*)",
+      "Read(**/*)",
+      "Bash(**/*)",
+      "List(**/*)",
+      "Search(**/*)"
+    ],
+    "deny": [],
+    "ask": []
   }
 }
