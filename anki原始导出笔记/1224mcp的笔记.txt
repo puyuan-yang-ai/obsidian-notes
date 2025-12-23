@@ -1,0 +1,64 @@
+#separator:tab
+#html:false
+ai-devtool mcp server里面的语义搜索是什么过程？	"# 1. 生成查询向量 # 2. 在 FAISS 向量库中搜索相似向量 # 3. 返回匹配结果"
+ai-devtool mcp server里面使用哪个 向量库	FAISS 向量库
+ai-devtool mcp server里面的纯关键词匹配的逻辑是什么？	分词后逐词匹配，标题匹配 > 标签匹配 > 内容匹配，按分数排序返回。
+ai-devtool mcp server里面的语义搜索是默认启用的吗？	语义搜索不是默认启用的，需要需要预先构建索引，只有当索引存在时才使用语义搜索，否则回退到关键词搜索
+mini-swe-agent  直接调用了ai-devtool mcp server tool函数，没有执行这个构建索引的指令， 那么ai-devtool的功能是否可以被mini-swe-agent正常使用？	可以的，没有构建索引也能正常运行，因为有索引，用语义搜索 ，否则使用关键词搜索
+关键词搜索和语义搜索，分别的搜索原理是什么？	"关键词搜索：分词 + 匹配，	  语义搜索: 向量相似度。"
+ai-devtool mcp server里面知识库更新后要重新构建索引吗？	✅ 是的，知识库更新后需要重新运行 build-index
+知识库更新后需要重新运行 build-index，这是为什么？	因为索引是静态快照，不会自动追踪知识库的变化：
+ai-devtool 构建索引之后，~/.cache/amd-ai-devtool/semantic-index/这个目录下面会放什么东西？	"├── index.faiss       # FAISS 向量索引文件 └── metadata.json     # 索引元数据"
+ai-devtool 里面，如何查找索引是否已经构建？	直接检查目录是否存在， ls -la ~/.cache/amd-ai-devtool/semantic-index/。
+"mini-swe-agent里面""首次自动构建 + 后续跳过"" 方案是什么样的？"	Agent 启动之后，检查索引是否存在，如果存在直接加载索引 ，  如果是首次启动：1. 提示用户2. 自动构建索引 3. 缓存到本地
+"在 mini-swe-agent 中实现""首次自动构建 + 后续跳过""的方案是什么？"	"mini-swe-agent 启动 (mini --mcp)，MCPEnabledEnvironment 初始化，检查 amd-ai-devtool 的语义索引是否存在，不存在，subprocess.run(""amd-ai-devtool maintenance build-index"")，如果存在，正常初始化，MCP 工具自动用语义搜索"
+在mini-swe-agent里面，什么阶段之后才会创建 Environment？	输入了mini启动指令之后，用户输入任务之后，才会创建Environment。
+"""首次自动构建 + 后续跳过"" 功能流程是什么样的？"	✅ 首次运行自动检测索引不存在✅ 自动调用 amd-ai-devtool maintenance build-index✅ 构建成功后提示用户✅ 后续启动会跳过构建（索引已存在）
+利用mini-swe-agent，启用mcp并且显示调试信息，那么输入指令是什么？	mini --mcp -d
+当索引存在时，是只用语义，还是语义+关键词同时用，还是先语义后关键词？	只用语义，不同时用。  具体的逻辑是，判断索引是否存在，YES → 执行语义搜索 → 直接 return 结果。 NO  → 关键词搜索
+语义检索返回的内容是否比关键词检索更精炼（更短）？	不一定更短，长度差不多。 原因： 两种搜索方式最终都是返回完整的 entry 内容（不是 chunk） 语义搜索的优势是相关性更准，不是返回更短
+可以把 LLM 服务拆成 4 层,分别是什么？	┌──────────────┐ │   应用层     │  Chat UI / Agent / API Server ├──────────────┤ │   服务层     │  OpenAI-compatible API / Routing ├──────────────┤ │   推理引擎   │  vLLM / llama.cpp / TensorRT-LLM ├──────────────┤ │   模型权重   │  LLaMA / Qwen / Mistral └──────────────┘
+Ollama 和 vLLM解决的是不同层级的问题。如何理解？	Ollama 是“模型运行与管理工具”  vLLM 是“高性能推理引擎”
+vLLM 只负责「推理引擎层」 核心目标：是什么？	高吞吐、低延迟
+从「系统分层」角度看把 LLM 服务拆成 4 层，分别是模型权重层，推理引擎层，服务层和应用层，vLLM和Ollama 分别在哪里？	vLLM 只负责「推理引擎层」，Ollama 覆盖 推理引擎 + 服务层 + 模型管理
+“Ollama 就是 vLLM 的封装”这个理解正确吗？	不对，Ollama 底层不是 vLLM，Ollama 是「面向个人/小团队的一体化 LLM runtime」，vLLM 是「面向生产环境的高性能推理引擎」两者目标用户不同。
+Ollama 和 vLLM 分别的使用场景是什么？	Ollama 是“把模型跑起来”的工具 vLLM 是“把模型跑得又快又省钱”的引擎   玩可以用 Ollama，生产必须 vLLM
+Ollama 部署比 vLLM 容易一点吗？	不是的，这个“更容易”不是一点点，是数量级差异。部署难度：Ollama ≪ vLLM，Ollama 是“傻瓜式运行”，vLLM 是“工程化部署”
+为什么使用Ollama，让任何人 5 分钟内把 LLM 跑起来？	所以它帮你提前做掉了这些事👇   模型下载 & 管理，   权重格式选择，   推理后端选择（CPU / GPU），   服务端口 & API，   默认参数（batch / ctx / kv），   你基本不用做决策。只需要执行这两行指令：ollama pull qwen2.5，ollama serve 就完事了。
+在rag里面，entry和chunk是什么区别呢？	Entry：文档级/来源级的“原子记录”（你从哪里来、整体是谁、元数据是什么）。   Chunk：从 entry 的正文里切出来的小片段（用于 embedding、检索、喂给 LLM）。
+用类比方式来理解rag里面的entry 和 chunk，分别是什么样的？	Entry = 这本书（书名、作者、出版日期、ISBN、来源链接、权限等）   Chunk = 书里的某几段内容（第 3 章第 2 节的 200~500 tokens）
+rag里面的chunk 是否天然等于“段落”或“2–3 句”?	不是的，chunk 的本质是：为了检索与拼上下文而人为切出来的“可控文本块”。它怎么切，主要由你的 chunking 策略（代码/配置）决定
+chunk 切分 和 chunk 质量分别由什么决定的？	chunk 切分：由 chunker（代码）决定，   chunk 质量：由 chunker + embedding 模型共同决定。
+在不限定具体 embedding 模型的情况下，通用经验，Chunk size 和 Overlap 分别是多少？	Chunk size（用于向量检索）：200–500 tokens 常见， Overlap：20%（比如 50–100 tokens）。
+embedding + Faiss，只返回文本给用户。这样的流程是否属于rag以及为什么？	不属于，因为他仅仅是检索而没有生成呀
+什么是Naive RAG（基础版 RAG）?	Query embedding,   向量检索 topK,   把结果拼进 prompt,   调用 LLM 生成答案.
+Naive RAG 的典型问题：用户问一句话,embedding 一次,直接查 但在真实 RAG 里，常见还会哪三种？	query rewrite，   query expansion，   拆子问题。
+什么是Naive RAG的流程？	将用户 query 向量化后在 Faiss 中做相似度检索， 取 topK chunks 作为上下文，拼接进 prompt 交给 LLM 生成答案。
+rag里面，检索到的topK chunk 需要经过哪些流程处理？	“去重 + 聚合 + 排序”
+RAG ≠ 一个模型问题，而是两个系统叠加：那两个叠加？	[ Retrieval System ]  →  [ Generation System ]
+评估rag的时候，一开始就用「最终答案好不好」来评估吗？	不是的，要先评估检索部分：也就是「该不该被检索出来的内容，有没有被检索出来？」
+Recall@K 这个指标是什么意思？	理应出现的内容，有没有出现在 topK 里
+Recall@K，这个问题，你认为 doc_12 一定要被检索到，而top5 里出现了，那么意味着什么？	Recall@5 = 1
+rag里面，Chunk size 怎么选？ 经验范围（不是规则）是什么样的?	200～500 tokens
+rag里面，topK 不是越大越好， topK 是在 什么和什么之间做 trade-off？	「Recall vs 噪声
+如何通过工程的方式来选 Recall 最稳的参数组合，比如chunk_size 以及topK 的组合？	① 准备 30 条 query + 期望文档 ② 固定 embedding 模型 ③ for chunk_size in [200,300,500,800]:       for topK in [3,5,10]:           跑 Retrieval           算 Recall@K ④ 选 Recall 最稳的组合
+RAG 工程里最痛的地方是什么？	构建高质量的检索评估集（QA 对 / query–document 对）。
+为什么人工构造评估集是难点，因为你需要明确回答两个问题：分别是什么？	1 这个 query 期望哪些文档 / chunks 被检索到？ 2 哪些 doc 是“不相关的”？
+构建评估集的时候，如何借助 LLM 自动标注 80%？	"1 给 LLM（可以是 GPT 或 open 模型）一个 chunk pool 2 输入 query，让 LLM 生成 “应该检索哪些 chunk” 3 只对 model 预测结果做人工审核/修正 伪示例 Prompt：  你是一个专家搜索引擎评估助手： 给定一个用户 query 和一批候选 chunk 请从中挑出 1～3 个 最相关的 chunk_id 返回 JSON： {""query"": ""..."", ""relevant"": [""id1"",""id7""], ""reason"": ""...""}"
+专门提出用来评估 RAG 系统的评估框架是什么？	RAGAS (Retrieval-Augmented Generation Assessment System)
+如果使用RAGAS 指标，那么我是不是不需要手工去标注数据了吗？	不是的，用 RAGAS，≠ 完全不需要人工标注，但：可以把人工标注量降低 70%～90%
+RAGAS 的本质是什么样的 RAG 评估框架？	LLM-as-a-Judge
+当你的目标是什么的时候，👉 RAGAS 非常好用，几乎不需要人工标注?	比较不同 chunk size，比较不同 topK，比较不同 embedding model，做相对优化（A vs B）
+“RAGAS 可以在不标注标准答案的情况下，进行什么评估以及适合什么场景？	自动评估 RAG 系统的检索与生成质量，非常适合做配置对比和迭代优化；
+rag里面，overlap 的作用只有一个：是什么？	防止关键信息刚好被切在 chunk 边界
+在 100 文档规模下：topk选择多少合适？	top5（黄金点）   Recall 基本拉满   噪声还可控   prompt 不会炸
+embedding模型和Faiss 参数，哪个更重要？	embedding 质量 ≫ Faiss 参数，   好 embedding + 简单索引 > 坏 embedding + 复杂索引，   👉 不要一开始纠结 Faiss IVF/HNSW，  👉 先选一个靠谱 embedding。
+top5 chunks 可能来自同一个文档的 5 个相邻 chunk，但你其实更想要 不同文档的 3～5 个。推荐的策略是什么样的？	topK chunk 检索，   按 entry_id 去重，   每个 entry 最多 2 个 chunk，   👉 这对小文档库提升非常明显。
+Faiss index 存在哪几种？	Flat / HNSW
+chunk_size = 400，指的是 400 个 tokens，还是字符?	400 个 tokens
+为什么chunk_size一定要用 token作为单位，而不是字符？	因为：embedding 模型“理解”的是 token，不是字符。  文本 → tokenizer → tokens → embedding 向量
+英文里面， 1 token ≈ 几个?字符	4
+chunk_size = 400 tokens， 那么 chunk 大约是 1500～1700 个英文字符。这样的 chunk 会不会太大？以及为什么？	结论：不会。 400 tokens 是目前业界非常常见、而且偏保守的 chunk size。  因为我们人类是按「段落长度」在读： 1500 字符 ≈ 2～3 个段落, 但embedding 模型不是人类阅读方式，它关心的是：语义是否完整,信息是否够密,是否能稳定表示一个“知识单元”
+“在英文 RAG 中，常见的 chunk_size=400 指的是 400 tokens， 大约对应 多少个英文字符。 这个大小在什么和什么之间是一个合理折中？	1600，语义完整性和检索精度之间.
+ai-devtool mcp server 返回长度过长的根源是什么？	返回的是entry，而不是chunk，每条 entry 内容太长
+AIG-Eval的工作空间隔离：是什么意思？	每个任务运行在时间戳命名的独立 workspace 中
