@@ -1,0 +1,43 @@
+#separator:tab
+#html:false
+如何使用AIG-Eval来评测不同模型在不同任务的表现，需要在哪个文件里面配置什么信息？	需要在 config.yaml 中指定 agent 和 tasks，然后运行就会自动完成所有工作
+AIG-Eval 利用agent 执行kernel优化的工作流程是什么？	"a) 阅读源代码，分析优化点                      b) 修改 kernel 代码（实施优化策略）             c) 运行编译命令（如 make）                      - 如果失败 → 修复错误 → 重新编译             d) 运行正确性验证命令（如 ./applications_silu） - 检查输出是否 ""Validation passed""     - 如果失败 → 修复 bug → 重新测试           e) 运行性能测试命令（如 rocprof-compute）         - 测量优化前后的执行时间                       - 计算加速比                          f) 填写 task_result.yaml"
+使用AIG-Eval的时候，配置是如何配置的？	修改 config.yaml 选择 agent 和 tasks
+"AIG-Eval的流程是下面这几个阶段，各个阶段分别是agent还是AIG-Eval框架本身负责的以及分别的作用是什么？ 工作空间准备，Prompt 构建	，代码优化	，编译	    ，正确性验证	，性能测试，结果记录	，评分	    ，报告生成"	工作空间准备  框架  复制任务目录到隔离 workspace， Prompt 构建    框架 自动读取任务配置，生成包含指令的 prompt， 代码优化     Agent  修改源代码实施优化策略， 编译      Agent   按 prompt 指令运行 make 等编译命令， 正确性验证   Agent   按 prompt 指令运行验证程序， 性能测试    Agent   按 prompt 指令运行性能分析命令， 结果记录    Agent   填写 task_result.yaml， 评分      框架  读取 task_result.yaml 计算分数， 报告生成    框架  汇总所有任务结果，输出评分报告。
+AIG-Eval里面的Agent（代理/智能体）是可插拔的 ，这是什么意思？	可插拔（Pluggable） 就是指可以随时替换、切换的意思。框架设计成 Agent 与评测逻辑分离，你可以：今天用 Claude Code 跑一遍任务，明天换成 SWE-agent 跑同样的任务，然后对比结果。
+AIG-Eval里面在哪里替换 测试使用的Agent？	config.yaml里面的agent.template字段
+AIG-Eval项目的入口文件是哪个，以及每次运行这个AIG-Eval的时候，启动指令是什么？	main.py 是入口文件，python main.py 作为启动指令，会执行 main() 函数。
+"利用AIG-Eval在评测assign_score_withk 这个任务的时候，下面这几个文件的作用分别是什么？ src/*.hip	 ，test_assign_score_withk.py  ，*_wrapper.py	 ，kernel_loader.py，*.pt	         ，expected_*.pt"	文件作用src/*.hip待优化的 HIP kerneltest_assign_score_withk.py主测试脚本：编译 kernel → 加载 → 验证 → 测性能*_wrapper.pyPython 层封装，方便调用 kernelkernel_loader.py动态加载编译好的 kernel*.pt输入测试数据expected_*.pt正确性验证的参考答案
+AIG-Eval在评测具体任务的时候，会读取任务的 config.yaml，这个yaml里面存放的是什么信息以及这些信息会如何被利用？	存放的是各种指令，这些信息作为 prompt 的一部分来送给模型
+AIG-Eval这个框架下，agent会执行什么样的流程？	"Agent 自己去：    - 阅读源码（source_file_path 指定的文件）    - 修改/优化 kernel    - 执行 compile_command    - 执行 correctness_command → 看输出有没有 ""PASS""    - 执行 performance_command → 记录执行时间    - 填写 task_result.yaml"
+AIG-Eval框架是否直接处理待评估的hip文件？	不会的，只读取 config.yaml 中的命令，交给 Agent 执行
+在评测任务里面，有assign_score_withk.cpp和assign_score_withk_cuda.hip这两个文件，他们的作用分别是什么？	这个文件是胶水代码，让 Python 能调用 HIP kernel。Agent 不需要改这个文件。assign_score_withk_cuda.hip是待优化的 AMD 版本（评测目标！）
+assign_score_withk.cpp  assign_score_withk_cuda.cu  assign_score_withk_cuda.hip  上面这三个文件显示了一个 CUDA → HIP 移植的场景	原始代码（NVIDIA） .cu 文件 (保留参考)  ->  移植后（AMD）.hip 文件 (待优化) ->      最终目标:优化后的 .hip(Agent 产出)
+AIG-Eval里面，为什么把各个指令拼接到提示词里面来让 Agent 来决策？	"因为这个是Agent 评测框架，给 Agent 目标，让它自己决定怎么做。make → 失败 → 分析错误信息 → 修复代码 → 重新编译 → 成功。这才是评测 Agent 智能程度的意义！ 框架只告诉 Agent""你要做什么""，不告诉它""你要怎么做""。"
+AIG-Eval在评估agent的时候，随机性会影响评测吗？	会，但最终评分维度固定；实际评测会多次运行取统计值
+AIG-Eval里面，”每个任务运行在时间戳命名的独立 workspace 中“，这里的workspace 是什么意思？是一个虚拟环境吗？	Workspace = 独立的文件夹副本 就是一个简单的文件夹，不是 Python 虚拟环境！
+AIG-Eval里面setup_workspace的流程是什么？	"# 1. 获取任务文件夹名      # 2. 创建带时间戳的新目录      # 3. 复制任务文件夹的所有内容到新目录"
+AIG-Eval里面，，为什么Workspace 的创建过程需要复制原始目录呢？	"保护原始文件	Agent 可能会乱改代码，不影响原始任务， 可重复实验	每次运行都是全新的副本，互不干扰。"
+agent的提示词里面会被注入cheatsheet固定的优化策略，现在需要去掉cheatsheet这个部分，那么需要在哪个文件里面，进行什么样的修改？	"在 prompt_builder.py 里修改，代码如下：     cheatsheet_prompt = """"          prompt_sections.append(cheatsheet_prompt)"
+AIG-Eval框架在评估mini-swe-agent的时候，是否需要知道 mini-swe-agent 目录在哪里？	不需要，只要求系统能找到 mini 这个命令！因为AIG-Eval是通过cli命令来启动相应的agent。
+AIG-Eval里面，Agent 是如何被加载的？从config.yaml里面读取agent 名称为起点，加载的流程是什么？	"第 1 步：读取 config.yaml里面的agent 名称，比如“SWE-agent”， 第 2 步：module_registration.py里面，将字符串 ""SWE-agent"" 转换为 AgentType.SWE_AGENT 枚举  第 3 步：module_registration.py里面,根据枚举类型，import 对应的模块 ,导入启动器  第 4 步：launch_agent.py里面，启动器被调用 ，本质上执行subprocess.Popen(cmd, ...)   ← 调用系统命令 ""mini""               第 5 步：系统PATH里面，找到 ""mini"" 命令并执行"
+AIG-Eval里面的agent目录,它们都必然包含哪个文件,然后这个文件里面大概率会包含着一个AGENT和OPTIONS这两个变量,如果存在这两个变量，那么这两个变量分别的作用是什么？	包含launch_agent.py文件作为agent启动文件，  AGENT变量呢就是用来存储对应agent的cli命令，然后OPTIONS存放的是这个cli命令的参数.
+如果需要在AIG-Eval里面接入自定义自己的Agent来进行评估，launch_agent这个函数里面一定用 AGENT + OPTIONS 的模式吗？	"不一定的，内部实现自由发挥：     # - 可以调用 CLI 命令（subprocess），也就是AGENT + OPTIONS模式，     # - 可以调用 Python 模块     # - 可以调用 HTTP API     # - 随便怎么实现都行"
+当我运行AIG-Eval的时候，选择了mini-swe-agent，这个时候这个评估框架不会读取我的这里面的mini-swe-agent项目的源码而是去相应的系统目录下面找这个已经安装好的程序是吗？以及为什么？	是的，启动评估的时候，评估框架使用的是cli命令，进而会去调用系统 PATH（如 /usr/local/bin, ~/.local/bin）里面已安装的 mini-swe-agent（通过 pip install 安装），而不是读取本地的源码目录。
+AIG-Eval里面的launch_agent.py里面使用到了”mini -c /path/to/mini.yaml “这个指令，这里的mini.yaml文件，指向的是这个mini-swe-agent所在的原代码目录吗还是说在安装后的目录呀？	都不是，这个文件是在 AIG-Eval 框架内部，也就是在AIG-Eval/agents/SWE_agent/mini.yaml 这里。
+运行 pip install -e . 或 pip install minisweagent 后，mini 命令被安装到系统中，如何验证这个实际被调用的路径呢？	在终端运行which mini，输出是/opt/conda/envs/xxx/bin/mini，这个路径才是 AIG-Eval 实际调用的程序。
+如何确定cli命令 mini 实际调用的程序在哪里？	在终端运行：which mini，这个路径才是 AIG-Eval 实际调用的程序！
+mini CLI 命令执行后是不是走对应的源代码？以及为什么？	"你在终端输入: mini --mcp -c xxx.yaml -t ""prompt""                 │                 ▼ 系统查找 PATH: which mini → ~/.local/bin/mini                 │                 ▼ 这个 mini 是一个入口脚本，指向安装后的 Python 包                 │                 ▼ 实际执行: python -m minisweagent.run.mini ...                 │                 ▼ 运行的是安装后的代码（来自你 pip install 时的那个源码目录）"
+AIG-Eval里面评估mini-swe-agent的时候，为什么使用的不是mini-swe-agent源码目录下面的自身的配置文件mini.yaml？	因为AIG-Eval 通过 -c 参数强制指定了配置文件。
+AIG-Eval强制指定配置文件mini.yaml而不是使用mini-swe-agent默认的配置文件，为什么 AIG-Eval 要这样设计？	因为 AIG-Eval 需要控制 Agent 的行为：从评估框架的角度来控制agent。
+AIG-Eval 的 mini.yaml（通过 -c 参数指定）以及 mini-swe-agent 的 prompts.py（--mcp 模式激活）这两个文件里面都有SYSTEM_TEMPLATE 和 INSTANCE_TEMPLATE  这两个提示词，那么我的prompts.py里面的提示词还会生效吗？也就是当同时使用 -c mini.yaml 和 --mcp 时，哪个 prompt 模板会生效？以及为什么？	通过 -c 参数指定的mini.yaml里面的SYSTEM_TEMPLATE 和 INSTANCE_TEMPLATE  这两个提示词不会生效，因为当 --mcp 模式开启时，主动删除 yaml 配置文件中的 prompt 模板，让 prompts.py 中的 这两个prompt 生效！也就是，代码主动删除了 yaml 中的 prompt，让 prompts.py 的模板优先
+AIG-Eval 的 mini.yaml（通过 -c 参数指定）以及 使用--mcp 模式激活 mini-swe-agent 的 prompts.py的情况下，AIG-Eval 的 mini.yaml 还有效吗？	有效果！其他配置（模型、超时等）仍然生效，只有SYSTEM_TEMPLATE 和 INSTANCE_TEMPLATE 这两个 prompt 模板被 prompts.py替换
+mini --mcp 激活 MCP 模式，自动使用什么？	使用的是你的 prompts.py 中的 prompt 模板，来覆盖-c mini.yaml 里面的system_template和instance_template这两个提示词。
+Cheatsheet 这部分的提示词是在AIG-Eval框架里面还是在mini-swe-agent里面？以及为什么？	在AIG-Eval里面的prompt_builder.py里面，因为Cheatsheet 属于评估框架层面给模型外加的知识库，从更宏观的角度来指导agent，类似Instructions 里面包含了各种agent可以参考的编译指令运行指令等等，Cheatsheet  这个部分是给模型执行的时候作为参考使用的。 prompt_builder.py里面包含下面这些要素：  - Task Type                                                        - Source Code  - Instructions                                                     - Output Format  - Cheatsheet   - Workspace Info
+config.yaml里面是下面这样写的，指向的是哪个文件？  tasks:   - customer_hip/silu	tasks/customer_hip/silu/config.yaml
+如何启动AIG-Eval的评估？	cd /home/puyuyang/projects/work/code_backup/AIG-Eval python main.py
+"系统 PATH 和 sys.path	分别的作用是什么?"	系统 PATH告诉操作系统去哪里找可执行命令sys.path告诉 Python 去哪里找模块/包
+系统 PATH 和 sys.path 分别的作用对象是什么以及查找什么以及各自的例子？	作用对象 ,   操作系统（Bash/Zsh/CMD）,  Python 解释器, 查找什么 ,   可执行文件（命令）,   Python 模块/包, 例子,  mini, python, git, ls 以及 import numpy, import torch.
+在终端输入: mini --mcp   ，后续会执行什么流程？	"操作系统查找 PATH 环境变量，  依次在这些目录中查找名为 ""mini"" 的可执行文件:             │  - /usr/local/bin/mini  ❌ 不存在                                     │  - /usr/bin/mini        ❌ 不存在                                  │  - ~/.local/bin/mini    ✅ 找到了！执行它"
+在 Python 中写: import minisweagent，会执行什么流程？	"Python 查找 sys.path 列表:                                          │   sys.path = [                                                        │     '',                              # 当前目录                        │     '/usr/lib/python3.10',           # 标准库                         │     '/usr/lib/python3.10/site-packages',  # 第三方包                  │     '/home/user/.local/lib/python3.10/site-packages',                │ │、  ]                                                                   │                          │                                            │                          ▼                                            │   依次在这些目录中查找 minisweagent 包:                                │   - site-packages/minisweagent/  ✅ 找到了！导入它"
+系统 PATH 和 sys.path 分别是用来找什么？以及分别是给哪里使用？	系统 PATH  → 找 cli命令  → 终端用  → which / $PATH， sys.path   → 找 模块/包  → Python用 → import / pip。
