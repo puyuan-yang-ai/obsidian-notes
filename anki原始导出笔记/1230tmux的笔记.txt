@@ -1,0 +1,108 @@
+#separator:tab
+#html:false
+tmux = 终端__用器。它能让你在远程断线/关闭 SSH 窗口后，会话不被____	复 挂起 (SIGHUP)。
+使用 tmux 或 screen 创建持久化会话的好处是什么？	即使 SSH 断开，会话和其中的命令也会继续在后台运行，不会中断。
+tmux 或 screen 叫做 终端___器（Terminal Multiplexer）	复用
+使用 tmux / screen 后再运行 docker build，这个程序是在 SSH 连接中运行吗？	不是的。  它是在独立的、持久化的会话中运行，而不是直接依赖于你的 SSH 连接。即使 SSH 掉线，构建也会继续执行。
+tmux 会话是持久的，如果服务器重启了，会话还在吗？为什么？	不会在。  因为 tmux 会话本质上是内存中的进程，服务器重启后内存清空，所有 tmux 会话都会丢失。
+tmux 与 screen 的关系是什么？	screen：老牌、稳定的终端复用工具。  tmux：更现代的替代品，被认为是 screen 的继任者，功能更丰富。
+当第一次在服务器上运行 tmux 时，会启动一个 tmux server 进程，它是否独立于登录会话并一直在后台运行？ 以及为什么？	是的。  tmux server 是独立于任何 SSH 登录会话的守护进程，因为它的父进程是系统的 init 或 systemd，而不是你的 SSH 登录 Shell。  因此即使你退出 SSH，tmux server 依然会在后台运行，保持会话存在。
+当第一次在服务器上运行 tmux 时，会启动一个 tmux server 进程，这个进程是___进程。	守护
+当您第一次在服务器上运行 tmux 时，它会启动一个 tmux server 进程。这个进程是一个___进程，它的父进程是___的初始进程（init 或 systemd）	守护 系统
+在tmux 里面运行python xxx.py，这个进程树是什么样的？   ____总管 (systemd) -> tmux ____-> (在tmux里的)____-> python xxx.py	系统总管 (systemd) -> tmux server -> (在tmux里的)bash -> python xxx.py
+在 tmux 里运行程序时，SSH 断开时发送的 SIGHUP 信号会不会影响 tmux server 以及它的子进程？	不会。  SIGHUP 只会影响你登录时的那个交互式 Shell。  tmux server 是独立的守护进程，不受 SSH 断开影响，它和其中的子进程都会继续运行。
+在 tmux 中鼠标滚动无法查看历史输出吗？	是的，默认情况下鼠标滚动无效。需进入复制模式：按 Ctrl + b，松开后再按 [；退出时按 q。
+"tmux 指令中，如何创建一个名为 ""hip"" 的新会话？"	使用：tmux new -s hip
+tmux 里如何脱离会话（让脚本在后台运行）？	按 Ctrl + b，松开后再按 d。
+tmux 里如何查看所有会话？	使用：tmux ls
+"tmux 里如何重新连接到 ""hip"" 会话？"	使用：tmux attach -t hip
+创建新会话、列出会话、连接会话的 tmux 指令分别是什么？	创建：tmux new -s 会话名   列出：tmux ls   连接：tmux attach -t 会话名
+脱离会话、杀死会话、在会话内滚动查看输出的 tmux 指令分别是什么？	脱离：Ctrl+b 然后 d   杀死：tmux kill-session -t 会话名   滚动：Ctrl+b 然后 [，用方向键滚动，q 退出
+tee 指令有什么作用？	将输出同时写到终端和文件，实现“一边显示一边保存”。
+使用 tmux 跑起 step2 之后，我就可以放心关机了吗？	不行，这取决于你的运行环境：     - 远程服务器（SSH）上运行：可以关机（本地电脑关机不会影响远程服务器）。   - 本地 WSL 上运行：不能关机。关机会关闭 Windows 和 WSL，tmux 会话和脚本都会终止。
+为什么在远程服务器上用 tmux 时，可以放心关机？	因为 tmux 运行在远程服务器上，关掉本地电脑只是断开 SSH，服务器上的 tmux 会话和脚本会继续运行。
+下班前用 tmux 跑了指令，第二天用什么指令恢复？	使用 `tmux attach`（或 `tmux attach -t <会话名>`）即可恢复原来的会话。
+`tmux attach` 和 `tmux attach -t <会话名>` 的区别和联系是什么？	`tmux attach` 会自动连接到上一次使用的会话；   `tmux attach -t <会话名>` 用于明确连接到指定会话。
+tmux attach -t <会话名> 里的 -t 是什么的缩写？	-t 是 target-session 的缩写，用来指定目标会话。
+如何确定自己是否在使用 WSL？	如果路径以 /mnt/c/Users/... 开头，就说明是在 WSL 环境中。
+/mnt/c/Users/... 里的 mnt 是什么？	mnt 表示 mount，用于挂载外部文件系统的目录。
+/mnt/c/Users/... 里的 c 是什么？	c 表示挂载的 Windows C 盘。
+/mnt/c/Users/... 表示 WSL 在 C 盘吗？我的代码文件也在 C 盘吗？	它只表示你当前访问的代码文件存放在 Windows 的 C 盘；并不代表 WSL 安装在 C 盘。
+在 WSL 下，如果代码在 D 盘，还会是 /mnt/c/Users/... 吗？	不会。D 盘会对应 /mnt/d/...，路径会变成 /mnt/d/你的目录。
+tmux ls 显示有 hip 和 step2，这时不需要了，用 kill-window 还是 kill-session？为什么？	用 kill-session，因为 hip 和 step2 都是独立会话；   kill-session 会直接删除整个会话，比逐个删除窗口更干净、更快捷。
+tmux 里的 window 和 session 是什么关系？	一个 session 可以包含多个 window；   window 是 session 内的工作窗口，session 是容纳这些窗口的整体工作区。
+tmux ls 显示的是 window 还是 session？	tmux ls 显示的是所有 session，而不是 window。
+tmux kill-session -t hip 和 tmux kill-window -t hip 的区别是什么？	kill-session 删除整个会话；   kill-window 只删除指定窗口，不影响其他窗口或会话。
+如何把 python step2a_generate_complete_code.py 改成 tee 输出日志，既在终端显示又写入日志？	python -u step2a_generate_complete_code.py 2>&1 | tee step2a.log
+2>&1 里的 “& 表示目标是文件描述符而不是文件路径”如何理解？	加上 &，表示 > 后面跟的是文件描述符（如 1、2），不是文件名；   如 >&1 意味着“重定向到描述符 1”，而不是重定向到名为“1”的文件。
+2>&1 里的 > 和 & 分别是什么意思？	> 表示重定向；   & 表示目标是文件描述符而不是文件路径。
+python -u step2a_generate_complete_code.py 2>&1 | tee step2a.log   里面的 2>&1 ，2和1以及整体 2>&1 的分别是什么意思？	2 表示标准错误输出（stderr）；   1 表示标准输出（stdout）；   2>&1 表示把错误输出重定向到标准输出。
+在 tmux 中按下 Ctrl+b 再按 [ 后，这个模式叫什么？还能看到终端变化吗？	这是“复制模式”（copy-mode），进入后不会显示终端的实时变化。
+在 tmux 中按下 Ctrl+b 再按 [ 之后，如何返回正常模式？	按 q 或 Esc 即可退出复制模式，回到 tmux 正常界面。
+tmux 的创建指令是什么？	使用 `tmux new -s 会话名` 创建一个新会话。
+使用 tmux 跑一晚上，第二天能查完整输出吗？	不能。因为 tmux 的滚动缓冲区有限，输出超过缓冲区大小的内容会被覆盖，除非提前将日志重定向到文件。
+使用 tmux 跑一晚上，第二天想查完整输出该怎么办？	可用 `tee` 命令，将输出同时显示在终端并写入日志文件，例如： your_command | tee output.log  这样既能实时查看，又能保留完整日志。
+python -u step2a_generate_complete_code.py 2>&1 | tee step2a.log 这样的命令叫什么？	叫**“使用 tee 命令同时输出到终端和日志文件”的命令
+nohup python -u xxx.py > xxx.log 2>&1 & 里的 2>&1 是什么意思？	表示把标准错误（stderr，编号 2）重定向到标准输出（stdout，编号 1），让两者合并输出到同一个日志文件。
+在宿主机和容器里运行 tmux ls，显示的会一样吗？	不会。因为 tmux 会话存储在各自系统的 /tmp 或用户目录下，宿主机和容器环境隔离，互不共享 tmux 会话信息。
+使用 tmux 能看到完整日志吗？	不能。tmux 只保存有限的滚动缓冲区（history-limit），超过部分会被覆盖，不会自动保留完整日志。
+完整运行历史的根本解决方案永远是什么？	把输出持久化到文件（重定向/tee/日志系统）。
+tmux 被叫做「终端复用器」是什么意思？	就是在一个终端里同时管理多个“子终端”（会话/窗口），即使断开连接，这些会话也继续运行，你可以随时再连回来接着用。
+在终端里 Ctrl + C 是做什么的？	会向当前前台进程发送中断信号（SIGINT），通常用来停止正在运行的程序。
+tmux 里面如何把正在运行的脚本停掉？	切换到运行脚本的那个 pane，按下 Ctrl + C。
+tmux 里“一开就是三分屏”是什么意思？	就是一个终端窗口被分成三块独立的小窗，每块都有自己的 shell，可以同时操作不同任务。
+每次新开终端本质上是是吗？	本质上是建立新的 SSH 连接 每打开一个新的远程终端窗口，都会发起一次独立的 SSH 连接。
+使用tmux的时候，底部绿色区域显示 [hip] 0:bash  1:tcsh- 2:tcsh*  这是什么意思？	hip：session 名 0:bash：第 0 号 window，名字叫 bash 这个session里面一共有3个windows
+tmux 里的 session、window 和 pane 分别是什么意思？	session：一个大的工作台 window：工作台里的标签页 pane：标签页中的小格子
+tmux 里一个 window 能否在 3 个 pane 中互不影响地运行不同命令？为什么？	可以的。因为每个 pane 都是独立的终端环境，互不干扰。
+tmux 里一个 window 有 3 个 pane，如何从右下角的 pane 切换到其他两个？	先按 Ctrl + b，再按方向键 ← / → / ↑ / ↓ 即可切换。
+htop 是实时显示的吗？显示什么？如何退出？	是的，htop 会实时显示系统的进程、CPU、内存等使用情况。 按 q 键即可退出。
+grep 是按行来筛选的吗？	是的，grep 会逐行匹配，只输出包含指定关键词的行。
+grep 是什么的缩写？	是 Global Regular Expression Print 的缩写，意思是“全局正则表达式打印”。
+每次新开终端后，在运行脚本前要做哪两件事？	先用 cd 进入项目目录，再用 conda activate 激活对应环境。
+tmux 里session → window → pane这样三个层级，普通人的主流用法是什么样的？	通常是 1 个 session，配少量 window，每个 window 里开 1–2 个 pane。
+tmux attach -t hip || tmux new -s hip 是什么意思？什么时候用？	表示先尝试连接名为 hip 的 session；如果不存在，就新建一个名为 hip 的 session。 常用于方便地进入同一个工作环境。
+tmux 里如何结束一个 window？	在该 window 的任意 pane 中输入 exit，或用快捷键 Ctrl + b 再按 & 关闭当前 window。
+bashrc 是什么的缩写？	是 bash run commands 的缩写，表示 bash 启动时自动执行的配置脚本。
+bashrc 脚本有什么作用？修改后是否需要 source？为什么？	bashrc 用来配置环境变量、别名等，让每次打开终端时自动生效。 修改后需要执行 source ~/.bashrc，因为只有这样当前终端才能重新加载新配置。
+alias 是针对 Linux 本身的还是 tmux 的？	是针对 Linux shell 本身 的，与 tmux 无关。
+bashrc 用来配置环境变量是什么意思？	就是在 bashrc 里定义一些系统或程序运行时需要的变量，例如路径（PATH）、Python 环境等，让终端启动时自动加载这些设置。
+bashrc 只针对 bash 命令吗？	是的。bashrc 只在使用 bash shell 时生效，对其他 shell（如 zsh、fish）不起作用。
+在终端里输入 bash 就会进入 bash shell 吗？	是的。输入 bash 会启动一个新的 bash 会话，进入 bash shell 环境。
+bashrc 文件的执行时机是什么时候？	输入 bash 的时候， 当你启动一个新的 交互式非登录 bash（比如打开终端或输入 bash）时，bashrc 就会被执行。
+tmux new -s 和 tmux new-session -s 是一回事吗？以及为什么？	是的，两者等价，new 只是 new-session 的简写形式。
+你自定义的唯一 session 别名是什么？对应的指令是什么？	别名是 work， 对应的指令是：tmux attach -t work || tmux new -s work。
+你自定义的列出所有 session 的别名是什么？对应的指令是什么？	别名是 tl， 对应的指令是：tmux list-sessions。
+你自定义的新建 session 的别名是什么？对应的指令是什么？	别名是 tn， 对应的指令是：tmux new-session -s。
+你自定义的回到最近 session 的别名是什么？对应的指令是什么？	别名是 ta， 对应的指令是：tmux attach。
+你自定义的回到指定 session 的别名是什么？对应的指令是什么？	别名是 tat， 对应的指令是：tmux attach -t。
+你自定义的回到最近（踢掉其他连接） session 的别名是什么？对应的指令是什么？	别名是 tad， 对应的指令是：tmux attach -d。
+你自定义的删除某个 session 的别名是什么？对应的指令是什么？	别名是 tk， 对应的指令是：tmux kill-session -t。
+你自定义的删除所有 session 的别名是什么？对应的指令是什么？	别名是 tka（kill all）， 对应的指令是：tmux kill-server。
+tmux 里为什么总是用 Ctrl + b？这个 b 是干什么的？	Ctrl + b 是 tmux 的默认前缀键，表示“告诉 tmux 我接下来要输入控制命令”， b 没有特别含义，只是历史上作者选择了它作为默认前缀。
+什么是 tmux 的前缀键？作用是什么？	前缀键是 tmux 用来区分“普通输入”和“控制命令”的开头信号。 按下前缀键（默认 Ctrl + b）后，tmux 才会把下一个按键当作控制指令来执行。
+tmux 里的普通输入和控制命令有什么区别？	普通输入：直接发送给当前 pane 的 shell，比如输入命令或运行程序。 控制命令：用来操作 tmux 自身的，比如分屏、切换窗口、关闭 pane 等。 区别在于——普通输入作用在“终端里的程序”，控制命令作用在“tmux 本身”。
+终端里的信息太多，如何清空？	可以输入命令：clear，或按快捷键 Ctrl + L。 两者都会清屏，但不会删除命令历史。
+tmux 如何进入和退出复制模式？	进入：按 Ctrl + b，再按 [ 退出：按 q 或 Enter 即可退出复制模式。
+tmux 里如何创建和结束 window？	创建：按 Ctrl + b，再按 c 结束：在该 window 输入 exit
+tmux 里怎么判断脚本运行在哪一层？运行在session还是在window还是在pane呢？	脚本只会运行在 pane 里。 window 是装 pane 的“盒子”，session 是装盒子的“书包”。
+连上某台机器或容器后，主流做法是开多个 session 吗？	不是。通常只固定用 一个 session，在里面开多个 window 来区分任务。
+tmux 里 window 的重命名、新建和切换快捷键是什么？	重命名 window：Ctrl + b , 新建 window：Ctrl + b c 切换 window：Ctrl + b 0–9 或 Ctrl + b n/p
+tmux 里 window 的 切换快捷键有哪两种方式？	切换 window：Ctrl + b 0–9 或 Ctrl + b n/p
+运行 tail -f xxx.log 后想退出怎么办？	按 Ctrl + C 即可停止并退出。
+我的 tmux 工作流中：session叫什么以及包含那四个window，以及这些window分别作用是什么？	session 名叫 work，包含 4 个 window：0: run —— 用来运行脚本或程序1: logs —— 查看日志输出2: git —— 进行代码管理和提交3: monitor —— 监控系统/硬件资源或进程状态
+python -u xxx.py > xxx.log 2>&1   python -u xxx.py > xxx.log 2>&1 &    这两个指令有什么区别？	不加 &：脚本在前台运行，占用终端，直到结束；Ctrl+C 会终止执行。   加 &：脚本在后台运行，终端立即可用，你可继续输入其他命令；可用 ps 等方式查看状态。
+python -u xxx.py > xxx.log 2>&1  python -u xxx.py > xxx.log 2>&1 &       这两个指令有什么区别？	不加 &：脚本在前台运行，占用终端，直到结束；Ctrl+C 会终止执行。   加 &：脚本在后台运行，终端立即可用，你可继续输入其他命令；可用 ps 等方式查看状态。
+为什么执行 python -u xxx.py > xxx.log 2>&1 & 会马上回到提示符？	因为末尾的 & 会把该命令放到后台执行，shell 不会等待任务完成，因此会立即返回提示符。
+tmux 和 & / nohup 的核心区别是什么？它们分别属于什么维度？	tmux 属于「会话管理 + 防断线」维度，用来保持会话不断开。   & / nohup 属于「前台 / 后台运行」维度，用来控制进程是否占用终端。
+什么时候该用 tmux，什么时候不用？	需要在远程服务器或容器中执行重要、耗时的任务时，用 tmux 保证会话不断线。   对于快速执行的小命令或普通 Linux 指令，直接在终端运行即可，无需 tmux。
+docker exec -it 进容器后跑长脚本，如果 SSH 断了脚本也会挂，这是因为 exec 的本质和什么一样？	它的本质类似于一次 SSH 连接：会话断开，内部任务也会随之终止。
+SSH 断开时，shell 会收到中断信号、退出，从而导致其中运行的程序也被中断，这样理解对吗？	对。SSH 掉线会导致当前 shell 会话终止，shell 退出后其中的程序也会跟着被终止。
+python 命令里的 nohup 和 & 分别表示什么？	nohup：忽略挂断信号（SIGHUP）。   &：丢后台运行。
+在 Windows PowerShell 中 tmux 能用吗？	不能。tmux 属于 Linux/Unix 终端复用器，Windows 默认不支持。
+tmux 里的“标签页”指的是什么？	指的是 tmux 的 window。
+判断何时使用 tmux 的标准：在哪里运行什么脚本要用 tmux？	只要是在远程服务器或容器中运行会耗时的脚本，就应该使用 tmux。
+满足哪两个条件之一就要用 tmux？	在远程服务器或容器里执行；   脚本预计运行超过几十秒，且你在乎它的结果或日志。
+哪两种情况完全不用 tmux？	只执行各种快速的 Linux 小命令；   只跑 1～2 秒的测试脚本。
+Carriage Return 和 Line Feed 分别对应什么机械行为？	Carriage Return：将字头滑架移动回行首。   Line Feed：让纸张向上卷动一行。
+Windows/Unix/Linux 分别使用 CRLF 还是 LF？	Windows：CRLF。   Unix/Linux：LF。
