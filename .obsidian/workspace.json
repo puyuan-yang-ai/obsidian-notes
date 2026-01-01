@@ -1,0 +1,262 @@
+{
+  "main": {
+    "id": "224393d532b8b154",
+    "type": "split",
+    "children": [
+      {
+        "id": "226289907bf5532b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ac872771af91bc84",
+            "type": "leaf",
+            "state": {
+              "type": "bases",
+              "state": {
+                "file": "Untitled.base",
+                "viewName": "Table"
+              },
+              "icon": "lucide-table",
+              "title": "Untitled"
+            }
+          },
+          {
+            "id": "e1eb2d32b8a2fc9f",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          },
+          {
+            "id": "7783f33adb327a2c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "git的笔记123.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "git的笔记123"
+            }
+          },
+          {
+            "id": "507f607c815f3738",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          },
+          {
+            "id": "97c0aa213f919ea3",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f3b42e89fb712454",
+    "type": "split",
+    "children": [
+      {
+        "id": "6668849fad204321",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "90ffa059c6bc9b70",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "49c36df2a4df8d73",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "60808d7627730f30",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "edcf878da219c6f1",
+    "type": "split",
+    "children": [
+      {
+        "id": "b7202f64533f34bd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "58b8752aa2283772",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Untitled.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Untitled"
+            }
+          },
+          {
+            "id": "f3aa4cdeeaabe88b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Untitled.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Untitled"
+            }
+          },
+          {
+            "id": "93cd3858d94d153b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "db5bf05b6c5de3aa",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "d2421e7fa58474af",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Untitled.canvas",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Untitled"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "obsidian-git:Open Git source control": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:创建新数据库": false
+    }
+  },
+  "active": "90ffa059c6bc9b70",
+  "lastOpenFiles": [
+    "润色后的文章/分支管理与协作.md",
+    "润色后的文章/SSH配置与认证.md",
+    "git的笔记123.md",
+    "er.name",
+    "assets/git的笔记123",
+    "assets/git的笔记123/file-20251201234238761.png",
+    "assets/git的笔记",
+    "assets",
+    "未命名.md",
+    "润色后的文章/MOC-Git完全指南.md",
+    "润色后的文章/IDE集成与工具配置.md",
+    "未命名.canvas",
+    "润色后的文章/Git基础概念与配置.md",
+    "Untitled.canvas",
+    "润色后的文章/团队协作最佳实践.md",
+    "润色后的文章/远程仓库操作.md",
+    "Untitled.base",
+    "润色后的文章/Git学习笔记-按主题分类.md",
+    "润色后的文章/MOC-Git完全指南.md.tmp.27892.1764599061245",
+    "润色后的文章/高级Git操作.md",
+    "润色后的文章/IDE集成与工具配置.md.tmp.27892.1764598725147",
+    "润色后的文章/高级Git操作.md.tmp.27892.1764598683119",
+    "润色后的文章/Git工作流程与三个区域.md",
+    "anki原始导出笔记/git的笔记.txt",
+    "git的笔记.txt",
+    "anki原始导出笔记/xx.md",
+    "github文件.md",
+    "测试.md"
+  ]
+}
