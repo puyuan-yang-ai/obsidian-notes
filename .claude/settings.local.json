@@ -1,14 +1,19 @@
 {
-  "bypassPermissions": true,
   "permissions": {
     "allow": [
       "Write(**/*)",
       "Read(**/*)",
       "Bash(**/*)",
       "List(**/*)",
-      "Search(**/*)"
+      "Search(**/*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git stash pop:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "bypassPermissions": true
 }
