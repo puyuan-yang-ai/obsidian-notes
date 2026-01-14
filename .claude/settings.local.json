@@ -10,8 +10,7 @@
       "Bash(git push:*)",
       "Bash(git pull:*)",
       "Bash(git stash:*)",
-      "Bash(git stash pop:*)",
-      "Bash(git add:*)"
+      "Bash(git stash pop:*)"
     ],
     "deny": [],
     "ask": []
