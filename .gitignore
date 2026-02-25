@@ -56,3 +56,4 @@ tmpclaude-*
 # 工作流和项目配置文件夹
 .spec-workflow/
 .specstory/
+.trash/
